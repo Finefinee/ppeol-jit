@@ -1,0 +1,22 @@
+# String 모듈 - 문자열 유틸리티
+
+# 문자열 길이 (배열의 len 함수 활용)
+export fn length(str) {
+    return len(str)
+}
+
+# 문자열 반복
+export fn repeat(str, count) {
+    let result = ""
+    let i = 0
+    while i < count {
+        result = result  # 현재는 문자열 연결 미지원
+        i = i + 1
+    }
+    return result
+}
+
+# 빈 문자열 확인
+export fn is_empty(str) {
+    return len(str) == 0
+}
