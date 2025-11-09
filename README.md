@@ -42,7 +42,7 @@
 
 ```bash
 # 저장소 클론
-git clone https://github.com/yourusername/finelang.git
+git clone https://github.com/Finefinee/ppeol-jit.git
 cd finelang
 
 # 빌드
