@@ -58,7 +58,7 @@ ASTNode* parser_parse(Parser* parser) {
 
 // 문장 파싱
 ASTNode* parser_parse_statement(Parser* parser) {
-    if (parser->current_token->type == TOKEN_IMPORT) {
+    if (parser->current_token->type == TOKEN_IMPORT || parser->current_token->type == TOKEN_FROM) {
         return parser_parse_import(parser);
     } else if (parser->current_token->type == TOKEN_EXPORT) {
         return parser_parse_export(parser);
@@ -322,8 +322,59 @@ ASTNode* parser_parse_assert(Parser* parser) {
 }
 
 // import 문 파싱
-// 문법: import module_name [as alias]
+// import 문 파싱
+// 문법: import module_name [as alias] 또는 from module_name import name1, name2
 ASTNode* parser_parse_import(Parser* parser) {
+    // 'from module import ...' 형태 체크
+    if (parser->current_token->type == TOKEN_FROM) {
+        parser_advance(parser); // 'from' 건너뛰기
+        
+        if (parser->current_token->type != TOKEN_IDENTIFIER) {
+            fprintf(stderr, "Error: Expected module name after 'from'\n");
+            exit(1);
+        }
+        
+        char* module_name = strdup(parser->current_token->value);
+        parser_advance(parser);
+        
+        // 'import' 키워드 확인
+        if (parser->current_token->type != TOKEN_IMPORT) {
+            fprintf(stderr, "Error: Expected 'import' after module name\n");
+            exit(1);
+        }
+        parser_advance(parser); // 'import' 건너뛰기
+        
+        // 임포트할 이름들 파싱
+        int capacity = 5;
+        char** names = (char**)malloc(sizeof(char*) * capacity);
+        int count = 0;
+        
+        while (parser->current_token->type == TOKEN_IDENTIFIER) {
+            if (count >= capacity) {
+                capacity *= 2;
+                names = (char**)realloc(names, sizeof(char*) * capacity);
+            }
+            names[count++] = strdup(parser->current_token->value);
+            parser_advance(parser);
+            
+            if (parser->current_token->type == TOKEN_COMMA) {
+                parser_advance(parser);
+            } else {
+                break;
+            }
+        }
+        
+        ASTNode* node = (ASTNode*)malloc(sizeof(ASTNode));
+        node->type = AST_IMPORT;
+        node->data.import_stmt.module_name = module_name;
+        node->data.import_stmt.alias = NULL;
+        node->data.import_stmt.names = names;
+        node->data.import_stmt.name_count = count;
+        
+        return node;
+    }
+    
+    // 'import module [as alias]' 형태
     parser_advance(parser); // 'import' 건너뛰기
     
     if (parser->current_token->type != TOKEN_IDENTIFIER) {
@@ -351,6 +402,8 @@ ASTNode* parser_parse_import(Parser* parser) {
     node->type = AST_IMPORT;
     node->data.import_stmt.module_name = module_name;
     node->data.import_stmt.alias = alias;
+    node->data.import_stmt.names = NULL;
+    node->data.import_stmt.name_count = 0;
     
     return node;
 }

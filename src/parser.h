@@ -151,8 +151,10 @@ typedef struct ASTNode {
             char* message;  // NULL이면 기본 메시지
         } assert_stmt;
         struct {
-            char* module_name;  // import할 모듈 이름
-            char* alias;        // as로 지정한 별칭 (NULL이면 원래 이름 사용)
+            char* module_name;   // import할 모듈 이름
+            char* alias;         // as로 지정한 별칭 (NULL이면 원래 이름 사용)
+            char** names;        // from...import에서 임포트할 이름들 (NULL이면 전체 모듈)
+            int name_count;      // 임포트할 이름의 개수
         } import_stmt;
         struct {
             struct ASTNode* node;  // export할 노드 (함수, 변수 등)

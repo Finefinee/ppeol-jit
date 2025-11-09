@@ -735,6 +735,8 @@ Value* interpreter_eval(Interpreter* interp, ASTNode* node) {
         case AST_IMPORT: {
             char* module_name = node->data.import_stmt.module_name;
             char* alias = node->data.import_stmt.alias;
+            char** names = node->data.import_stmt.names;
+            int name_count = node->data.import_stmt.name_count;
             
             // 캐시에서 모듈 확인
             Module* module = module_cache_get(interp->module_cache, module_name);
@@ -759,14 +761,28 @@ Value* interpreter_eval(Interpreter* interp, ASTNode* node) {
                 module_cache_add(interp->module_cache, module);
             }
             
-            // VAL_MODULE 객체 생성
-            Value* module_obj = value_create_module(module_name, module->exports);
-            
-            // 변수 이름 결정 (alias가 있으면 alias 사용, 없으면 module_name 사용)
-            char* var_name = alias ? alias : module_name;
-            
-            // 현재 환경에 모듈 객체를 변수로 저장
-            environment_set(interp->current_env, var_name, module_obj);
+            // from module import name1, name2 형태인 경우
+            if (names != NULL && name_count > 0) {
+                // 지정된 이름들만 현재 환경에 추가
+                for (int i = 0; i < name_count; i++) {
+                    Value* exported = environment_get(module->exports, names[i]);
+                    if (exported == NULL) {
+                        fprintf(stderr, "Error: Module '%s' does not export '%s'\n", 
+                                module_name, names[i]);
+                        continue;
+                    }
+                    environment_set(interp->current_env, names[i], value_copy(exported));
+                }
+            } else {
+                // 일반 import: 모듈 객체 생성
+                Value* module_obj = value_create_module(module_name, module->exports);
+                
+                // 변수 이름 결정 (alias가 있으면 alias 사용, 없으면 module_name 사용)
+                char* var_name = alias ? alias : module_name;
+                
+                // 현재 환경에 모듈 객체를 변수로 저장
+                environment_set(interp->current_env, var_name, module_obj);
+            }
             
             return value_create_null();
         }

@@ -1,5 +1,48 @@
 # FineLang 변경 이력
 
+## v2.2.2 (2025-01-09) - from...import 구문 🎯
+
+### 새로운 기능
+
+#### from...import 구문
+- ✨ **선택적 임포트**: 모듈에서 특정 심볼만 가져오기
+  ```finelang
+  from math import abs, max, PI
+  print(abs(-5))      # 5 - math. 없이 직접 사용
+  print(max(10, 20))  # 20
+  print(PI)           # 3.14159
+  ```
+
+- ✨ **네임스페이스 오염 방지**: 필요한 함수만 현재 환경에 추가
+  ```finelang
+  # 방법 1: 전체 모듈 임포트 (네임스페이스 접근)
+  import math
+  print(math.abs(-5))
+  
+  # 방법 2: 특정 함수만 임포트 (직접 접근)
+  from math import abs
+  print(abs(-5))
+  ```
+
+- ✨ **여러 심볼 지원**: 쉼표로 구분하여 여러 함수/변수 가져오기
+  ```finelang
+  from string import length, repeat, is_empty
+  ```
+
+### 구현 세부사항
+
+- **파서**: `TOKEN_FROM` 처리, `parser_parse_statement`에서 `TOKEN_FROM` 시작 지원
+- **인터프리터**: `names` 배열을 순회하며 지정된 심볼만 현재 환경에 추가
+- **호환성**: 기존 `import module` 및 `import module as alias` 구문과 공존
+
+### 파일
+
+- `src/parser.c`: `parser_parse_import` 함수 수정
+- `src/interpreter.c`: `AST_IMPORT` 케이스에서 `names` 배열 처리
+- `test_from_import.fine`: from...import 테스트 파일
+
+---
+
 ## v2.2.1 (2025-01-09) - 2차원 인덱싱 지원 🎯
 
 ### 새로운 기능

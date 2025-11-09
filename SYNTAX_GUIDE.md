@@ -1233,34 +1233,41 @@ import math      # stdlib/math.fine을 찾음
 import mymodule  # ./mymodule.fine을 찾음
 ```
 
-### 10.5 v1.9.0의 제한사항
+### 10.5 from...import 구문 (v2.2.2+)
 
-현재 버전에서는 다음 기능이 제한됩니다:
+모듈에서 특정 심볼만 가져와서 직접 사용할 수 있습니다:
 
-#### ❌ 네임스페이스 접근 불가
 ```finelang
+# math 모듈에서 특정 함수만 가져오기
+from math import abs, max, PI
+
+print(abs(-5))      # 5 - math. 없이 직접 사용
+print(max(10, 20))  # 20
+print(PI)           # 3.14159
+
+# 여러 줄로 나누기
+from string import length, 
+                   repeat,
+                   is_empty
+```
+
+**일반 import vs from...import 비교**
+
+```finelang
+# 방법 1: 일반 import (네임스페이스 접근)
 import math
-# math.abs(-5)  # 아직 지원하지 않음 (v2.0 예정)
+print(math.abs(-5))  # math. 접두사 필요
+
+# 방법 2: from...import (직접 접근)
+from math import abs
+print(abs(-5))       # 직접 사용
+
+# 방법 3: 별칭 사용
+import math as m
+print(m.abs(-5))     # 짧은 별칭 사용
 ```
 
-#### ❌ 특정 심볼 import 불가
-```finelang
-# from math import abs, max  # 아직 지원하지 않음 (v2.0 예정)
-```
-
-#### ❌ 별칭(as) 기능 미완성
-```finelang
-# import math as m  # 파싱은 되지만 동작하지 않음 (v2.0 예정)
-```
-
-### 10.6 v2.0 로드맵
-
-다음 기능들이 v2.0에서 추가될 예정입니다:
-
-- ✅ **네임스페이스 접근**: `module.function()` 형태 호출
-- ✅ **from...import**: 특정 심볼만 가져오기
-- ✅ **별칭(as)**: 모듈이나 심볼에 다른 이름 부여
-- ✅ **export 접근성**: import한 모듈의 export된 심볼 사용
+### 10.6 v2.0의 제한사항
 
 ### 10.7 모듈 예제
 
