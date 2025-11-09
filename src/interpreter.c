@@ -195,6 +195,27 @@ Value* interpreter_eval(Interpreter* interp, ASTNode* node) {
             }
             return value_create_array(elements, node->data.array.element_count);
         }
+        
+        case AST_MATRIX: {
+            // 행렬 생성
+            Value* matrix = value_create_matrix(node->data.matrix.row_count, node->data.matrix.col_count);
+            
+            // 각 행의 데이터를 행렬에 채우기
+            for (int i = 0; i < node->data.matrix.row_count; i++) {
+                ASTNode* row_node = node->data.matrix.rows[i];
+                for (int j = 0; j < node->data.matrix.col_count; j++) {
+                    Value* elem = interpreter_eval(interp, row_node->data.array.elements[j]);
+                    if (elem->type == VAL_NUMBER) {
+                        matrix->data.matrix.data[i][j] = elem->data.number;
+                    } else {
+                        matrix->data.matrix.data[i][j] = 0.0;
+                    }
+                    value_free(elem);
+                }
+            }
+            
+            return matrix;
+        }
             
         case AST_DICT: {
             char** keys = (char**)malloc(sizeof(char*) * node->data.dict.pair_count);
@@ -245,6 +266,28 @@ Value* interpreter_eval(Interpreter* interp, ASTNode* node) {
                 value_free(array);
                 value_free(index);
                 return value_create_null();
+            } else if (array->type == VAL_MATRIX && index->type == VAL_NUMBER) {
+                // 행렬 행 접근 (1차원 인덱스는 행을 반환)
+                int idx = (int)index->data.number;
+                if (idx < 0 || idx >= array->data.matrix.rows) {
+                    char msg[100];
+                    snprintf(msg, sizeof(msg), "matrix row index out of range: %d", idx);
+                    interp->current_exception = value_create_exception("IndexError", msg);
+                    exception_attach_stack_trace(interp, interp->current_exception);
+                    interp->has_exception = 1;
+                    value_free(array);
+                    value_free(index);
+                    return value_create_null();
+                }
+                // 행을 배열로 반환
+                Value** row_elements = (Value**)malloc(sizeof(Value*) * array->data.matrix.cols);
+                for (int j = 0; j < array->data.matrix.cols; j++) {
+                    row_elements[j] = value_create_number(array->data.matrix.data[idx][j]);
+                }
+                Value* result = value_create_array(row_elements, array->data.matrix.cols);
+                value_free(array);
+                value_free(index);
+                return result;
             }
             
             value_free(array);
@@ -801,6 +844,96 @@ Value* interpreter_eval_binary(Interpreter* interp, ASTNode* node) {
                 result = value_create_number(sum);
             }
         }
+    } else if (left->type == VAL_MATRIX && right->type == VAL_MATRIX) {
+        // 행렬 연산
+        if (strcmp(op, "+") == 0 || strcmp(op, "-") == 0) {
+            // 행렬 덧셈/뺄셈: 크기가 같아야 함
+            if (left->data.matrix.rows == right->data.matrix.rows &&
+                left->data.matrix.cols == right->data.matrix.cols) {
+                
+                int rows = left->data.matrix.rows;
+                int cols = left->data.matrix.cols;
+                Value* result_matrix = value_create_matrix(rows, cols);
+                
+                for (int i = 0; i < rows; i++) {
+                    for (int j = 0; j < cols; j++) {
+                        double l = left->data.matrix.data[i][j];
+                        double r = right->data.matrix.data[i][j];
+                        
+                        if (strcmp(op, "+") == 0) {
+                            result_matrix->data.matrix.data[i][j] = l + r;
+                        } else {
+                            result_matrix->data.matrix.data[i][j] = l - r;
+                        }
+                    }
+                }
+                result = result_matrix;
+            } else {
+                // 크기 불일치 에러
+                char msg[200];
+                snprintf(msg, sizeof(msg), 
+                    "matrix dimension mismatch: (%dx%d) %s (%dx%d)",
+                    left->data.matrix.rows, left->data.matrix.cols, op,
+                    right->data.matrix.rows, right->data.matrix.cols);
+                interp->current_exception = value_create_exception("ValueError", msg);
+                exception_attach_stack_trace(interp, interp->current_exception);
+                interp->has_exception = 1;
+                value_free(left);
+                value_free(right);
+                return value_create_null();
+            }
+        } else if (strcmp(op, "@") == 0) {
+            // 행렬 곱셈: A의 열 수 = B의 행 수
+            if (left->data.matrix.cols == right->data.matrix.rows) {
+                int m = left->data.matrix.rows;
+                int n = right->data.matrix.cols;
+                int k = left->data.matrix.cols;
+                
+                Value* result_matrix = value_create_matrix(m, n);
+                
+                for (int i = 0; i < m; i++) {
+                    for (int j = 0; j < n; j++) {
+                        double sum = 0.0;
+                        for (int p = 0; p < k; p++) {
+                            sum += left->data.matrix.data[i][p] * right->data.matrix.data[p][j];
+                        }
+                        result_matrix->data.matrix.data[i][j] = sum;
+                    }
+                }
+                result = result_matrix;
+            } else {
+                // 크기 불일치 에러
+                char msg[200];
+                snprintf(msg, sizeof(msg), 
+                    "matrix dimension mismatch for multiplication: (%dx%d) @ (%dx%d)",
+                    left->data.matrix.rows, left->data.matrix.cols,
+                    right->data.matrix.rows, right->data.matrix.cols);
+                interp->current_exception = value_create_exception("ValueError", msg);
+                exception_attach_stack_trace(interp, interp->current_exception);
+                interp->has_exception = 1;
+                value_free(left);
+                value_free(right);
+                return value_create_null();
+            }
+        }
+    } else if ((left->type == VAL_MATRIX && right->type == VAL_NUMBER) ||
+               (left->type == VAL_NUMBER && right->type == VAL_MATRIX)) {
+        // 스칼라 곱: 행렬 * 숫자 또는 숫자 * 행렬
+        if (strcmp(op, "*") == 0) {
+            Value* matrix = (left->type == VAL_MATRIX) ? left : right;
+            double scalar = (left->type == VAL_NUMBER) ? left->data.number : right->data.number;
+            
+            int rows = matrix->data.matrix.rows;
+            int cols = matrix->data.matrix.cols;
+            Value* result_matrix = value_create_matrix(rows, cols);
+            
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    result_matrix->data.matrix.data[i][j] = matrix->data.matrix.data[i][j] * scalar;
+                }
+            }
+            result = result_matrix;
+        }
     }
     
     value_free(left);
@@ -1231,6 +1364,21 @@ Value* value_create_module(char* name, Environment* exports) {
     return val;
 }
 
+Value* value_create_matrix(int rows, int cols) {
+    Value* val = (Value*)malloc(sizeof(Value));
+    val->type = VAL_MATRIX;
+    val->data.matrix.rows = rows;
+    val->data.matrix.cols = cols;
+    
+    // 2차원 배열 할당
+    val->data.matrix.data = (double**)malloc(sizeof(double*) * rows);
+    for (int i = 0; i < rows; i++) {
+        val->data.matrix.data[i] = (double*)calloc(cols, sizeof(double));
+    }
+    
+    return val;
+}
+
 // 값 복사
 Value* value_copy(Value* val) {
     if (!val) return value_create_null();
@@ -1265,6 +1413,15 @@ Value* value_copy(Value* val) {
         case VAL_MODULE:
             // 클래스, 인스턴스, 모듈은 참조로 전달 (간단한 구현)
             return val;
+        case VAL_MATRIX: {
+            Value* copy = value_create_matrix(val->data.matrix.rows, val->data.matrix.cols);
+            for (int i = 0; i < val->data.matrix.rows; i++) {
+                for (int j = 0; j < val->data.matrix.cols; j++) {
+                    copy->data.matrix.data[i][j] = val->data.matrix.data[i][j];
+                }
+            }
+            return copy;
+        }
         case VAL_EXCEPTION: {
             Value* exc = value_create_exception(val->data.exception.type, val->data.exception.message);
             exc->data.exception.stack_trace = stack_copy(val->data.exception.stack_trace);
@@ -1340,6 +1497,12 @@ void value_free(Value* val) {
                 stack_frame_free(val->data.exception.stack_trace);
             }
             break;
+        case VAL_MATRIX:
+            for (int i = 0; i < val->data.matrix.rows; i++) {
+                free(val->data.matrix.data[i]);
+            }
+            free(val->data.matrix.data);
+            break;
         default:
             break;
     }
@@ -1393,6 +1556,20 @@ void value_print(Value* val) {
             break;
         case VAL_MODULE:
             printf("<module '%s'>", val->data.module.name);
+            break;
+        case VAL_MATRIX:
+            printf("Matrix(%dx%d)[\n", val->data.matrix.rows, val->data.matrix.cols);
+            for (int i = 0; i < val->data.matrix.rows; i++) {
+                printf("  [");
+                for (int j = 0; j < val->data.matrix.cols; j++) {
+                    printf("%g", val->data.matrix.data[i][j]);
+                    if (j < val->data.matrix.cols - 1) printf(", ");
+                }
+                printf("]");
+                if (i < val->data.matrix.rows - 1) printf(",");
+                printf("\n");
+            }
+            printf("]");
             break;
         case VAL_EXCEPTION:
             // 스택 트레이스가 있으면 먼저 출력

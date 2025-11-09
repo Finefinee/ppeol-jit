@@ -621,6 +621,7 @@ ASTNode* parser_parse_postfix(Parser* parser) {
             index_node->type = AST_INDEX;
             index_node->data.index.array = node;
             index_node->data.index.index = index;
+            index_node->line = parser->current_token->line;
             node = index_node;
             
         } else if (parser->current_token->type == TOKEN_DOT) {
@@ -861,6 +862,37 @@ ASTNode* parser_parse_array(Parser* parser) {
     }
     
     parser_advance(parser); // ']' 건너뛰기
+    
+    // 중첩 배열인지 확인 (행렬 변환)
+    if (array->data.array.element_count > 0) {
+        int is_matrix = 1;
+        int first_cols = -1;
+        
+        // 모든 요소가 배열이고 같은 길이인지 확인
+        for (int i = 0; i < array->data.array.element_count; i++) {
+            if (array->data.array.elements[i]->type != AST_ARRAY) {
+                is_matrix = 0;
+                break;
+            }
+            int cols = array->data.array.elements[i]->data.array.element_count;
+            if (first_cols == -1) {
+                first_cols = cols;
+            } else if (cols != first_cols) {
+                is_matrix = 0;
+                break;
+            }
+        }
+        
+        // 행렬로 변환
+        if (is_matrix && first_cols > 0) {
+            ASTNode* matrix = (ASTNode*)malloc(sizeof(ASTNode));
+            matrix->type = AST_MATRIX;
+            matrix->data.matrix.row_count = array->data.array.element_count;
+            matrix->data.matrix.col_count = first_cols;
+            matrix->data.matrix.rows = array->data.array.elements;
+            return matrix;
+        }
+    }
     
     return array;
 }

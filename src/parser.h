@@ -34,7 +34,8 @@ typedef enum {
     AST_THROW,
     AST_ASSERT,
     AST_IMPORT,
-    AST_EXPORT
+    AST_EXPORT,
+    AST_MATRIX
 } ASTNodeType;
 
 // AST 노드 구조체
@@ -156,6 +157,11 @@ typedef struct ASTNode {
         struct {
             struct ASTNode* node;  // export할 노드 (함수, 변수 등)
         } export_stmt;
+        struct {
+            struct ASTNode** rows;  // 각 행은 배열 노드
+            int row_count;
+            int col_count;
+        } matrix;
     } data;
     int line;  // 라인 번호
 } ASTNode;
