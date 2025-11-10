@@ -1,9 +1,9 @@
 # FineLang 🚀
 
-> **현재 버전: v2.2.5** | AI/ML에 최적화된 간결하고 강력한 프로그래밍 언어
+> **현재 버전: v2.2.6** | AI/ML에 최적화된 간결하고 강력한 프로그래밍 언어
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]()
-[![Version](https://img.shields.io/badge/version-2.2.5-blue)]()
+[![Version](https://img.shields.io/badge/version-2.2.6-blue)]()
 [![License](https://img.shields.io/badge/license-MIT-green)]()
 [![Language](https://img.shields.io/badge/language-C-orange)]()
 
@@ -17,7 +17,7 @@ FineLang은 **AI/ML 개발**과 **일반 프로그래밍**을 위해 설계된 �
 
 | 항목 | 내용 |
 |------|------|
-| **현재 버전** | v2.2.5 (2025-01-10) |
+| **현재 버전** | v2.2.6 (2025-01-10) |
 | **구현 언어** | C (C99 표준) |
 | **코드 라인** | ~5,700 LOC |
 | **라이센스** | MIT |
@@ -148,6 +148,43 @@ print(typeof(42))        # "number"
 print(typeof("hello"))   # "string"
 print(typeof([1, 2]))    # "array"
 print(typeof({x: 10}))   # "dict"
+```
+
+### 🛠️ 유틸리티 함수 (v2.2.6)
+
+**Python 스타일 메서드 체이닝 지원!**
+
+```finelang
+# 배열 메서드 체이닝
+let arr = [1, 2, 3]
+let arr2 = arr.append(4)         # [1, 2, 3, 4] (원본 유지)
+print(arr)                       # [1, 2, 3]
+
+# 체이닝 가능
+let result = [5, 2, 8, 1, 9].reverse()
+print(result)                    # [9, 1, 8, 2, 5]
+
+# 검색 메서드
+print([1, 2, 3].contains(2))     # 1 (true)
+print([1, 2, 3].index_of(2))     # 1
+
+# 수학 메서드
+let nums = [5, 2, 8, 1, 9]
+print(nums.min())                # 1
+print(nums.max())                # 9
+
+# 문자열 메서드
+print("Hello, World!".contains("World"))  # 1
+print("Hello, World!".index_of("World"))  # 7
+
+# 실용 예제: 메서드 체이닝
+let scores = [85, 92, 78, 95, 88]
+if scores.contains(95) {
+    print("Perfect score found!")
+}
+print("Highest:", scores.max())  # 95
+print("Lowest:", scores.min())   # 78
+```
 
 # 안전한 함수 작성
 fn safe_divide(a, b) {

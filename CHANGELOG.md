@@ -1,5 +1,110 @@
 # FineLang 변경 이력
 
+## v2.2.6 (2025-01-10) - 배열/문자열 유틸리티 함수 🛠️
+
+### 새로운 기능
+
+#### 🎯 Python 스타일 메서드 체이닝 지원!
+
+모든 유틸리티 함수는 **두 가지 방식**으로 사용 가능:
+1. **함수 호출 방식**: `contains(arr, value)`
+2. **메서드 체이닝 방식**: `arr.contains(value)` ⭐
+
+```finelang
+# 함수 방식
+print(contains([1, 2, 3], 2))    # 1
+
+# 메서드 방식 (더 직관적!)
+print([1, 2, 3].contains(2))     # 1
+```
+
+#### 검색 함수
+- ✨ **array.contains(value) / contains(array, value)**: 요소 포함 여부
+  ```finelang
+  print([1, 2, 3].contains(2))           # 1 (true)
+  print("Hello".contains("ell"))          # 1 (true)
+  ```
+
+- ✨ **array.index_of(value) / index_of(array, value)**: 인덱스 찾기 (-1 반환)
+  ```finelang
+  print([1, 2, 3].index_of(2))           # 1
+  print("Hello".index_of("l"))            # 2
+  print([1, 2, 3].index_of(5))           # -1
+  ```
+
+#### 배열 조작 함수
+- ✨ **array.append(value) / append(array, value)**: 요소 추가 (원본 유지)
+  ```finelang
+  let arr = [1, 2, 3]
+  let new_arr = arr.append(4)
+  print(arr)      # [1, 2, 3] (원본 유지)
+  print(new_arr)  # [1, 2, 3, 4]
+  ```
+
+- ✨ **array.reverse() / reverse(array)**: 배열 뒤집기
+  ```finelang
+  print([1, 2, 3, 4, 5].reverse())  # [5, 4, 3, 2, 1]
+  ```
+
+#### 수학 함수
+- ✨ **array.min() / min(array)**: 최솟값
+  ```finelang
+  print([5, 2, 8, 1, 9].min())  # 1
+  ```
+
+- ✨ **array.max() / max(array)**: 최댓값
+  ```finelang
+  print([5, 2, 8, 1, 9].max())  # 9
+  ```
+
+### 실용 예제
+
+```finelang
+# Python 스타일 메서드 체이닝!
+let scores = [85, 92, 78, 95, 88]
+
+if scores.contains(95) {
+    print("Perfect score found!")
+}
+
+print("최고점:", scores.max())  # 95
+print("최저점:", scores.min())  # 78
+
+# 배열 조작 체이닝
+let arr = [1, 2, 3]
+let result = arr.append(4).append(5)
+print(result)  # [1, 2, 3, 4, 5]
+
+# 문자열 검색
+let text = "Hello, World!"
+if text.contains("World") {
+    let pos = text.index_of("World")
+    print("'World'는", pos, "번째에 있습니다")  # 7
+}
+
+# 인라인 메서드 호출
+print([5, 2, 8, 1, 9].reverse().max())  # 9
+```
+
+### 구현 세부사항
+
+**인터프리터 수정** (`src/interpreter.c`)
+- **AST_METHOD_CALL 확장**: 배열/문자열 메서드 체이닝 지원
+  - 배열 메서드: append, reverse, contains, index_of, min, max
+  - 문자열 메서드: contains, index_of
+- `append()`: 원본 유지, 새 배열 생성 (불변성)
+- `contains()`: 배열 선형 검색, 문자열 strstr() 사용
+- `index_of()`: 선형 검색, 문자열 포인터 연산
+- `reverse()`: 새 배열 생성 및 역순 복사
+- `min()`, `max()`: 선형 탐색
+
+### 호환성
+- ✅ 기존 코드와 100% 호환
+- ✅ 배열과 문자열 모두 지원 (contains, index_of)
+- ✅ null-safe (유효하지 않은 입력은 null 또는 -1 반환)
+
+---
+
 ## v2.2.5 (2025-01-10) - 타입 체크 함수 🔍
 
 ### 새로운 기능

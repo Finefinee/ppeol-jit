@@ -477,6 +477,155 @@ Value* interpreter_eval(Interpreter* interp, ASTNode* node) {
         case AST_METHOD_CALL: {
             Value* obj = interpreter_eval(interp, node->data.method_call.object);
             
+            // 배열 메서드 호출
+            if (obj->type == VAL_ARRAY) {
+                const char* method = node->data.method_call.method_name;
+                
+                // append(value) - 배열 끝에 요소 추가
+                if (strcmp(method, "append") == 0 && node->data.method_call.arg_count > 0) {
+                    Value* val = interpreter_eval(interp, node->data.method_call.args[0]);
+                    
+                    // 새 배열 생성 (원본 크기 + 1)
+                    Value** new_elements = (Value**)malloc(sizeof(Value*) * (obj->data.array.count + 1));
+                    
+                    // 기존 요소 복사
+                    for (int i = 0; i < obj->data.array.count; i++) {
+                        new_elements[i] = value_copy(obj->data.array.elements[i]);
+                    }
+                    
+                    // 새 요소 추가
+                    new_elements[obj->data.array.count] = value_copy(val);
+                    
+                    Value* result = value_create_array(new_elements, obj->data.array.count + 1);
+                    value_free(obj);
+                    value_free(val);
+                    return result;
+                }
+                
+                // reverse() - 배열 뒤집기
+                if (strcmp(method, "reverse") == 0) {
+                    Value** reversed = (Value**)malloc(sizeof(Value*) * obj->data.array.count);
+                    for (int i = 0; i < obj->data.array.count; i++) {
+                        reversed[i] = value_copy(obj->data.array.elements[obj->data.array.count - 1 - i]);
+                    }
+                    Value* result = value_create_array(reversed, obj->data.array.count);
+                    value_free(obj);
+                    return result;
+                }
+                
+                // contains(value) - 값 포함 여부
+                if (strcmp(method, "contains") == 0 && node->data.method_call.arg_count > 0) {
+                    Value* search = interpreter_eval(interp, node->data.method_call.args[0]);
+                    int found = 0;
+                    
+                    for (int i = 0; i < obj->data.array.count; i++) {
+                        Value* elem = obj->data.array.elements[i];
+                        if (elem->type == search->type) {
+                            if (elem->type == VAL_NUMBER && elem->data.number == search->data.number) {
+                                found = 1;
+                                break;
+                            } else if (elem->type == VAL_STRING && strcmp(elem->data.string, search->data.string) == 0) {
+                                found = 1;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    value_free(obj);
+                    value_free(search);
+                    return value_create_number(found);
+                }
+                
+                // index_of(value) - 값의 인덱스 찾기
+                if (strcmp(method, "index_of") == 0 && node->data.method_call.arg_count > 0) {
+                    Value* search = interpreter_eval(interp, node->data.method_call.args[0]);
+                    int index = -1;
+                    
+                    for (int i = 0; i < obj->data.array.count; i++) {
+                        Value* elem = obj->data.array.elements[i];
+                        if (elem->type == search->type) {
+                            if (elem->type == VAL_NUMBER && elem->data.number == search->data.number) {
+                                index = i;
+                                break;
+                            } else if (elem->type == VAL_STRING && strcmp(elem->data.string, search->data.string) == 0) {
+                                index = i;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    value_free(obj);
+                    value_free(search);
+                    return value_create_number(index);
+                }
+                
+                // min() - 최솟값
+                if (strcmp(method, "min") == 0 && obj->data.array.count > 0) {
+                    double min_val = obj->data.array.elements[0]->data.number;
+                    for (int i = 1; i < obj->data.array.count; i++) {
+                        if (obj->data.array.elements[i]->type == VAL_NUMBER) {
+                            double val = obj->data.array.elements[i]->data.number;
+                            if (val < min_val) {
+                                min_val = val;
+                            }
+                        }
+                    }
+                    value_free(obj);
+                    return value_create_number(min_val);
+                }
+                
+                // max() - 최댓값
+                if (strcmp(method, "max") == 0 && obj->data.array.count > 0) {
+                    double max_val = obj->data.array.elements[0]->data.number;
+                    for (int i = 1; i < obj->data.array.count; i++) {
+                        if (obj->data.array.elements[i]->type == VAL_NUMBER) {
+                            double val = obj->data.array.elements[i]->data.number;
+                            if (val > max_val) {
+                                max_val = val;
+                            }
+                        }
+                    }
+                    value_free(obj);
+                    return value_create_number(max_val);
+                }
+            }
+            
+            // 문자열 메서드 호출
+            if (obj->type == VAL_STRING) {
+                const char* method = node->data.method_call.method_name;
+                
+                // contains(substring) - 부분 문자열 포함 여부
+                if (strcmp(method, "contains") == 0 && node->data.method_call.arg_count > 0) {
+                    Value* search = interpreter_eval(interp, node->data.method_call.args[0]);
+                    int found = 0;
+                    
+                    if (search->type == VAL_STRING) {
+                        found = (strstr(obj->data.string, search->data.string) != NULL) ? 1 : 0;
+                    }
+                    
+                    value_free(obj);
+                    value_free(search);
+                    return value_create_number(found);
+                }
+                
+                // index_of(substring) - 부분 문자열 인덱스
+                if (strcmp(method, "index_of") == 0 && node->data.method_call.arg_count > 0) {
+                    Value* search = interpreter_eval(interp, node->data.method_call.args[0]);
+                    int index = -1;
+                    
+                    if (search->type == VAL_STRING) {
+                        char* pos = strstr(obj->data.string, search->data.string);
+                        if (pos != NULL) {
+                            index = pos - obj->data.string;
+                        }
+                    }
+                    
+                    value_free(obj);
+                    value_free(search);
+                    return value_create_number(index);
+                }
+            }
+            
             // 모듈 함수 호출
             if (obj->type == VAL_MODULE) {
                 // 모듈의 exports에서 함수 찾기

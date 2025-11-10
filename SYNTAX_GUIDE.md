@@ -1,9 +1,9 @@
 # FineLang 문법 가이드 📖
 
-> **FineLang v2.2.5** - AI/ML 작업에 최적화된 간결하고 강력한 프로그래밍 언어
+> **FineLang v2.2.6** - AI/ML 작업에 최적화된 간결하고 강력한 프로그래밍 언어
 
 **최종 업데이트**: 2025-01-10  
-**버전**: v2.2.5
+**버전**: v2.2.6
 
 ---
 
@@ -1250,6 +1250,213 @@ let result = reduce(add, filter(is_greater_than_5, map(square, numbers)), 0)
 print(result)  # 50
 ```
 
+---
+
+### 유틸리티 함수 (v2.2.6)
+
+> ✨ **Python 스타일 메서드 체이닝 지원!**  
+> 모든 유틸리티 함수는 `.` 연산자로 메서드처럼 호출 가능합니다.
+
+#### 사용 방법
+
+유틸리티 함수는 두 가지 방식으로 사용할 수 있습니다:
+
+1. **함수 호출 방식** (기존): `contains(arr, value)`
+2. **메서드 체이닝 방식** (Python 스타일): `arr.contains(value)`
+
+```finelang
+# 두 방식 모두 동일하게 작동
+let arr = [1, 2, 3, 4, 5]
+
+# 함수 호출 방식
+print(contains(arr, 3))      # 1
+
+# 메서드 체이닝 방식
+print(arr.contains(3))       # 1
+
+# 메서드 체이닝이 더 직관적!
+print([1, 2, 3].reverse())   # [3, 2, 1]
+```
+
+#### array.contains(value) / contains(array, value)
+배열이나 문자열에 특정 값이 포함되어 있는지 확인합니다.
+
+```finelang
+# 배열 검색 - 메서드 방식
+let arr = [1, 2, 3, 4, 5]
+print(arr.contains(3))       # 1 (true)
+print(arr.contains(10))      # 0 (false)
+
+# 문자열 검색 - 메서드 방식
+print("Hello, World!".contains("World"))  # 1
+print("Hello".contains("xyz"))            # 0
+
+# 함수 방식도 여전히 작동
+print(contains(arr, 3))                   # 1
+```
+
+**파라미터:**
+- `value`: 찾을 값 (배열의 경우 모든 타입, 문자열의 경우 부분 문자열)
+
+**반환값:** 1 (포함됨) 또는 0 (포함되지 않음)
+
+#### array.index_of(value) / index_of(array, value)
+배열이나 문자열에서 특정 값의 인덱스를 반환합니다.
+
+```finelang
+# 배열 인덱스 - 메서드 방식
+let arr = [10, 20, 30, 40]
+print(arr.index_of(30))       # 2
+print(arr.index_of(99))       # -1 (not found)
+
+# 문자열 인덱스 - 메서드 방식
+print("Hello".index_of("l"))  # 2 (첫 번째 'l')
+print("Hello".index_of("lo")) # 3
+print("Hello".index_of("x"))  # -1
+
+# 함수 방식
+print(index_of(arr, 30))      # 2
+```
+
+**파라미터:**
+- `value`: 찾을 값
+
+**반환값:** 0-based 인덱스 또는 -1 (찾지 못함)
+
+#### array.append(value) / append(array, value)
+배열의 끝에 새 요소를 추가합니다.
+
+```finelang
+# 메서드 방식 (Python 스타일!)
+let arr = [1, 2, 3]
+let new_arr = arr.append(4)
+print(arr)      # [1, 2, 3] (원본 유지)
+print(new_arr)  # [1, 2, 3, 4]
+
+# 함수 방식
+let arr2 = append([1, 2], 3)
+print(arr2)  # [1, 2, 3]
+
+# 체이닝도 가능
+let mixed = [].append(42).append("hello")
+print(mixed)  # [42, "hello"]
+```
+
+**파라미터:**
+- `value`: 추가할 값 (모든 타입 가능)
+
+**반환값:** 요소가 추가된 새 배열
+
+**주의:** 원본 배열은 수정되지 않습니다 (불변성 유지).
+
+#### array.reverse() / reverse(array)
+배열을 역순으로 뒤집습니다.
+
+```finelang
+# 메서드 방식
+let arr = [1, 2, 3, 4, 5]
+let rev = arr.reverse()
+print(rev)  # [5, 4, 3, 2, 1]
+
+# 인라인 사용
+print([1, 2, 3].reverse())  # [3, 2, 1]
+
+# 함수 방식
+let words = ["apple", "banana", "cherry"]
+print(reverse(words))  # ["cherry", "banana", "apple"]
+```
+
+**파라미터:** 없음
+
+**반환값:** 역순으로 정렬된 새 배열
+
+#### array.min() / min(array)
+배열에서 최솟값을 찾습니다.
+
+```finelang
+# 메서드 방식
+let numbers = [5, 2, 8, 1, 9, 3]
+print(numbers.min())  # 1
+
+# 함수 방식
+print(min([5, 2, 8]))  # 2
+
+# 음수도 가능
+let temps = [-5, 3, -2, 0, 7]
+print(temps.min())  # -5
+```
+
+**파라미터:** 없음
+
+**반환값:** 배열의 최솟값
+
+**오류:** 빈 배열이거나 숫자가 아닌 요소가 있으면 에러
+
+#### array.max() / max(array)
+배열에서 최댓값을 찾습니다.
+
+```finelang
+# 메서드 방식
+let numbers = [5, 2, 8, 1, 9, 3]
+print(numbers.max())  # 9
+
+# 실수도 가능
+let scores = [85.5, 92.3, 78.9, 95.0]
+print(scores.max())  # 95
+
+# 함수 방식
+print(max([1, 5, 3]))  # 5
+```
+
+**파라미터:** 없음
+
+**반환값:** 배열의 최댓값
+
+**오류:** 빈 배열이거나 숫자가 아닌 요소가 있으면 에러
+
+#### 실용 예제 - 메서드 체이닝
+
+```finelang
+# 점수 분석 시스템 (Python 스타일!)
+fn analyze_scores(scores) {
+    let highest = scores.max()
+    let lowest = scores.min()
+    
+    print("Highest score:", highest)
+    print("Lowest score:", lowest)
+    print("Range:", highest - lowest)
+    
+    if scores.contains(100) {
+        print("Perfect score achieved!")
+    }
+    
+    # 메서드 체이닝으로 간결하게
+    let fail_threshold = 60
+    let passing = []
+    let i = 0
+    while i < len(scores) {
+        if scores[i] >= fail_threshold {
+            let passing = passing.append(scores[i])
+        }
+        let i = i + 1
+    }
+    
+    print("Passing scores:", passing)
+    print("Pass rate:", len(passing), "/", len(scores))
+}
+
+let exam_scores = [85, 92, 78, 95, 88, 100, 65, 55]
+analyze_scores(exam_scores)
+# Output:
+# Highest score: 100
+# Lowest score: 55
+# Range: 45
+# Perfect score achieved!
+# Passing scores: [85, 92, 78, 95, 88, 100, 65]
+# Pass rate: 7 / 8
+```
+```
+
 ### 타입 변환
 
 #### str(value)
@@ -1362,6 +1569,7 @@ try {
 | v2.2.3 | 모듈 별칭 (as) |
 | v2.2.4 | 나머지(%), 몫(//) 연산자 |
 | v2.2.5 | 타입 체크 함수 (is_null, typeof 등) |
+| v2.2.6 | 유틸리티 함수 (contains, append, min/max 등) |
 
 ---
 
@@ -1586,4 +1794,4 @@ print("=== Utils 모듈 테스트 ===")
 
 ---
 
-**FineLang v2.2.5** - AI/ML을 위한 간결하고 강력한 언어 🚀
+**FineLang v2.2.6** - AI/ML을 위한 간결하고 강력한 언어 🚀
