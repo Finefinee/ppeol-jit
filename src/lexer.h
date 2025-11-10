@@ -46,6 +46,8 @@ typedef enum {
     TOKEN_MINUS,
     TOKEN_MULTIPLY,
     TOKEN_DIVIDE,
+    TOKEN_MODULO,       // % (나머지)
+    TOKEN_FLOOR_DIV,    // // (몫)
     TOKEN_AT,           // @ (내적 연산)
     TOKEN_ASSIGN,
     TOKEN_EQUAL,

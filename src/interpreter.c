@@ -2,6 +2,7 @@
 #include "module.h"
 #include <string.h>
 #include <stdio.h>
+#include <math.h>
 
 // 인터프리터 생성
 Interpreter* interpreter_create() {
@@ -826,6 +827,24 @@ Value* interpreter_eval_binary(Interpreter* interp, ASTNode* node) {
                 return value_create_null();
             }
             result = value_create_number(l / r);
+        }
+        else if (strcmp(op, "%") == 0) {
+            if (r == 0) {
+                interp->current_exception = value_create_exception("ZeroDivisionError", "modulo by zero");
+                exception_attach_stack_trace(interp, interp->current_exception);
+                interp->has_exception = 1;
+                return value_create_null();
+            }
+            result = value_create_number(fmod(l, r));
+        }
+        else if (strcmp(op, "//") == 0) {
+            if (r == 0) {
+                interp->current_exception = value_create_exception("ZeroDivisionError", "floor division by zero");
+                exception_attach_stack_trace(interp, interp->current_exception);
+                interp->has_exception = 1;
+                return value_create_null();
+            }
+            result = value_create_number(floor(l / r));
         }
         else if (strcmp(op, "==") == 0) result = value_create_number(l == r ? 1 : 0);
         else if (strcmp(op, "!=") == 0) result = value_create_number(l != r ? 1 : 0);

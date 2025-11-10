@@ -602,7 +602,9 @@ ASTNode* parser_parse_factor(Parser* parser) {
     ASTNode* left = parser_parse_unary(parser);
     
     while (parser->current_token->type == TOKEN_MULTIPLY ||
-           parser->current_token->type == TOKEN_DIVIDE) {
+           parser->current_token->type == TOKEN_DIVIDE ||
+           parser->current_token->type == TOKEN_MODULO ||
+           parser->current_token->type == TOKEN_FLOOR_DIV) {
         char* op = strdup(parser->current_token->value);
         parser_advance(parser);
         ASTNode* right = parser_parse_unary(parser);

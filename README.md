@@ -1,41 +1,117 @@
-# FineLang
+# FineLang 🚀
 
-> **현재 버전: v2.2.1** | AI/ML에 최적화된 간결하고 빠른 프로그래밍 언어
+> **현재 버전: v2.2.4** | AI/ML에 최적화된 간결하고 강력한 프로그래밍 언어
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]()
-[![Version](https://img.shields.io/badge/version-2.2.1-blue)]()
+[![Version](https://img.shields.io/badge/version-2.2.4-blue)]()
 [![License](https://img.shields.io/badge/license-MIT-green)]()
+[![Language](https://img.shields.io/badge/language-C-orange)]()
 
 ---
 
-## 📊 프로젝트 개요
+## 🌟 FineLang이란?
+
+FineLang은 **AI/ML 개발**과 **일반 프로그래밍**을 위해 설계된 현대적인 프로그래밍 언어입니다. Python의 간결함과 C의 성능을 결합하여, 데이터 과학자와 개발자 모두에게 친숙하면서도 강력한 도구를 제공합니다.
+
+### 📊 프로젝트 정보
 
 | 항목 | 내용 |
 |------|------|
-| **언어 이름** | FineLang |
-| **현재 버전** | v2.2.1 |
+| **현재 버전** | v2.2.4 (2025-01-09) |
 | **구현 언어** | C (C99 표준) |
-| **코드 라인** | ~5,650 LOC |
+| **코드 라인** | ~5,700 LOC |
 | **라이센스** | MIT |
 | **주요 용도** | AI/ML, 데이터 과학, 일반 프로그래밍 |
+| **실행 방식** | 인터프리터 (JIT 컴파일러 개발 중) |
 
 ---
 
-## 🚀 특징
+## ✨ 주요 특징
 
-- ⚡ **빠른 실행**: C로 구현되어 네이티브 속도 제공
-- 🧮 **벡터 연산**: 내장 벡터 타입과 연산자 지원
-- 📊 **완전한 행렬 지원**: 2D 행렬 타입과 선형대수 연산 (+, -, *, @), 2차원 인덱싱 (v2.2.1)
-- 🗂️ **자료 구조**: 딕셔너리(해시맵)와 중첩 자료 구조 지원
-- 🎯 **완전한 OOP**: 클래스, 상속, this/super, 오버라이딩 지원
-- 🛡️ **고급 예외 처리**: try/catch/finally, 타입별 catch, assert 문
-- 🔍 **스택 추적**: 예외 발생 시 함수 호출 스택 자동 표시 (v1.7.0)
-- 🎯 **고차 함수**: map, filter, reduce 내장 지원 (v1.8.0)
-- 📦 **완전한 모듈 시스템**: import/export, from...import, as 별칭, 직접 메서드 호출 (v2.2.3)
-- 🧮 **행렬 연산**: 2D 배열 자동 감지, +/-/*, @ 연산자, m[i][j] 인덱싱 (v2.1.0-v2.2.1)
-- 🤖 **AI 친화적**: 선형 회귀, 신경망 등 머신러닝 알고리즘에 최적화
-- 🔧 **간결한 문법**: Python과 유사한 읽기 쉬운 문법
-- 🚀 **REPL 모드**: 대화형 개발 환경 제공
+### 🎯 핵심 기능
+
+- ⚡ **네이티브 성능**: C로 구현되어 빠른 실행 속도
+- 🧮 **행렬 연산**: 2D 행렬 타입, 선형대수 연산 (+, -, *, @), 2차원 인덱싱
+- 📦 **모듈 시스템**: import/export, from...import, as 별칭 완벽 지원
+- 🎯 **완전한 OOP**: 클래스, 상속, this/super, 메서드 오버라이딩
+- 🛡️ **예외 처리**: try/catch/finally, 타입별 catch, 스택 추적
+- 🔧 **간결한 문법**: Python과 유사하여 배우기 쉬움
+
+### 🧮 풍부한 연산자 (v2.2.4)
+
+```finelang
+# 기본 산술
+print(10 + 5)    # 15
+print(10 - 5)    # 5
+print(10 * 5)    # 50
+print(10 / 3)    # 3.333...
+
+# 나머지와 몫
+print(10 % 3)    # 1 (나머지)
+print(10 // 3)   # 3 (몫)
+
+# 행렬 곱셈
+let A = [[1, 2], [3, 4]]
+let B = [[5, 6], [7, 8]]
+print(A @ B)     # 행렬 곱셈
+```
+
+### 📊 행렬 지원 (v2.1.0 - v2.2.1)
+
+```finelang
+# 자동 행렬 타입 인식
+let M = [[1, 2, 3], 
+         [4, 5, 6]]
+
+# 2차원 인덱싱
+print(M[0][1])   # 2
+
+# 행렬 연산
+let A = [[1, 2], [3, 4]]
+let B = [[5, 6], [7, 8]]
+print(A + B)     # 덧셈
+print(A - B)     # 뺄셈
+print(2 * A)     # 스칼라 곱
+print(A @ B)     # 행렬 곱
+```
+
+### 📦 모듈 시스템 (v2.0.0 - v2.2.3)
+
+```finelang
+# 전체 모듈 임포트
+import math
+print(math.abs(-5))      # 5
+
+# 별칭 사용
+import math as m
+print(m.PI)              # 3.14159
+
+# 선택적 임포트
+from math import abs, max, PI
+print(abs(-10))          # 10
+print(max(5, 10))        # 10
+print(PI)                # 3.14159
+```
+
+### 🎯 고차 함수 (v1.8.0)
+
+```finelang
+let numbers = [1, 2, 3, 4, 5]
+
+# map - 변환
+let doubled = map(numbers, fn(x) { return x * 2 })
+print(doubled)  # [2, 4, 6, 8, 10]
+
+# filter - 필터링
+let evens = filter(numbers, fn(x) { return x % 2 == 0 })
+print(evens)    # [2, 4]
+
+# reduce - 집계
+let sum = reduce(numbers, fn(acc, x) { return acc + x }, 0)
+print(sum)      # 15
+```
+
+---
 
 ## ⚡ 빠른 시작
 
@@ -53,215 +129,287 @@ make
 sudo make install
 ```
 
-### 첫 프로그램
+### 첫 프로그램 실행
 
 **파일: hello.fine**
 ```finelang
-print("Hello, FineLang!")
+print("Hello, FineLang! 🚀")
 ```
 
 **실행:**
 ```bash
 ./finelang hello.fine
+# 출력: Hello, FineLang! 🚀
 ```
 
-### REPL 모드
+### REPL 모드 사용
 
 ```bash
 ./finelang
 >>> let x = 42
 >>> print(x)
 42
+>>> let sum = fn(a, b) { return a + b }
+>>> print(sum(10, 20))
+30
 >>> exit
 ```
 
-## 📖 문서
+---
 
-- **[SYNTAX_GUIDE.md](SYNTAX_GUIDE.md)** - 완전한 문법 가이드 (기본 문법, 클래스, 예외 처리, 고차 함수 등)
-- **[CHANGELOG.md](CHANGELOG.md)** - 버전별 변경사항
+## 📖 문서 및 예제
+
+### 📚 문서
+- **[SYNTAX_GUIDE.md](SYNTAX_GUIDE.md)** - 완전한 문법 가이드
+  - 기본 문법 (변수, 함수, 제어문)
+  - 객체지향 프로그래밍 (클래스, 상속)
+  - 예외 처리 (try/catch/finally)
+  - 고차 함수 (map, filter, reduce)
+  - 모듈 시스템 (import/export)
+  - 행렬 연산
+  
+- **[CHANGELOG.md](CHANGELOG.md)** - 버전별 상세 변경사항
+
+### 💡 예제 파일
+
+```
+examples/
+├── hello.fine              # Hello World
+├── fibonacci.fine          # 피보나치 수열
+├── linear_regression.fine  # 선형 회귀
+├── neural_network.fine     # 신경망 예제
+├── matrix_basic.fine       # 행렬 기초
+├── matrix_operations.fine  # 행렬 연산
+├── module_alias.fine       # 모듈 별칭
+└── modulo_floordiv.fine   # 나머지/몫 연산
+```
+
+---
 
 ## 📁 프로젝트 구조
 
 ```
 finelang/
-├── src/               # 소스 코드
-│   ├── lexer.c/h     # 어휘 분석기
-│   ├── parser.c/h    # 구문 분석기
-│   ├── interpreter.c/h  # 인터프리터
-│   ├── environment.c/h  # 환경 관리
-│   ├── module.c/h    # 모듈 시스템 (v1.9.0)
-│   └── main.c        # 진입점
-├── stdlib/           # 표준 라이브러리 (v1.9.0)
-│   ├── math.fine     # 수학 함수
-│   └── string.fine   # 문자열 함수
-├── examples/         # 예제 코드
-├── Makefile          # 빌드 설정
-├── README.md         # 이 문서
-├── SYNTAX_GUIDE.md   # 완전한 문법 가이드
-└── CHANGELOG.md      # 버전 변경 이력
+├── src/                    # 소스 코드
+│   ├── lexer.c/h          # 어휘 분석기 (토큰화)
+│   ├── parser.c/h         # 구문 분석기 (AST 생성)
+│   ├── interpreter.c/h    # 인터프리터 (실행 엔진)
+│   ├── module.c/h         # 모듈 시스템
+│   └── main.c             # 진입점
+├── stdlib/                 # 표준 라이브러리
+│   ├── math.fine          # 수학 함수 (abs, max, min, PI 등)
+│   └── string.fine        # 문자열 함수
+├── examples/               # 예제 코드
+├── build/                  # 빌드 출력
+├── Makefile               # 빌드 설정
+├── README.md              # 이 문서
+├── SYNTAX_GUIDE.md        # 문법 가이드
+└── CHANGELOG.md           # 변경 이력
 ```
-
-## 🎯 성능
-
-FineLang은 매우 빠릅니다:
-
-```
-피보나치(20): 즉시 계산
-10,000 반복: < 16ms
-벡터 연산: 네이티브 속도
-```
-
-## 🛠️ 기술 스택 및 아키텍처
-
-### 컴파일 파이프라인
-
-```
-소스 코드 (.fine)
-    ↓
-[ Lexer ] ────→ 토큰 스트림 (Tokens)
-    ↓
-[ Parser ] ───→ 추상 구문 트리 (AST)
-    ↓
-[ Interpreter ] → 실행 및 결과 출력
-```
-
-### 핵심 구성 요소
-
-| 구성 요소 | 설명 | 파일 |
-|-----------|------|------|
-| **Lexer** | 소스 코드를 토큰으로 분해 | `src/lexer.c/h` |
-| **Parser** | 토큰을 AST로 변환 | `src/parser.c/h` |
-| **Interpreter** | AST를 순회하며 실행 | `src/interpreter.c/h` |
-| **Environment** | 변수 스코프 관리 | `src/environment.c/h` |
-
-### 프로젝트 통계
-
-- **총 코드 라인**: ~5,650 LOC
-- **핵심 파일**: 10개 (.c/.h)
-- **AST 노드 타입**: 36개
-- **토큰 타입**: 50개
-- **값 타입**: 10개 (NUMBER, STRING, ARRAY, DICT, FUNCTION, CLASS, INSTANCE, EXCEPTION, MODULE, MATRIX, NULL)
-- **내장 함수**: 13개
-- **예외 타입**: 6개
-- **표준 라이브러리**: math, string (v2.0.0)
 
 ---
 
-## 📋 내장 함수
+## 🎯 코드 예제
 
-### 입출력
-- `print(...)`: 값 출력
+### Hello World
+```finelang
+print("Hello, FineLang!")
+```
 
-### 배열 함수
-- `range(start, end)`: 범위 생성
-- `len(array/dict)`: 크기 반환
-- `sum(array)`: 배열 합계
-- `push(array, value)`: 배열에 추가
+### 변수와 함수
+```finelang
+# 변수 선언
+let name = "FineLang"
+let version = 2.2
 
-### 딕셔너리 함수
-- `keys(dict)`: 모든 키
-- `values(dict)`: 모든 값
+# 함수 정의
+fn greet(name) {
+    print("Hello,", name, "!")
+}
 
-### 고차 함수 (v1.8.0)
-- `map(function, array)`: 배열의 각 요소에 함수 적용
-- `filter(predicate, array)`: 조건을 만족하는 요소만 선택
-- `reduce(function, array, initial)`: 배열을 단일 값으로 축약
+greet("World")
+```
 
-자세한 내용은 [SYNTAX_GUIDE.md](SYNTAX_GUIDE.md)를 참조하세요.
+### 클래스와 OOP
+```finelang
+# 클래스 정의
+class Person {
+    fn init(name, age) {
+        this.name = name
+        this.age = age
+    }
+    
+    fn introduce() {
+        print("I'm", this.name, ", age", this.age)
+    }
+}
+
+# 상속
+class Student extends Person {
+    fn init(name, age, major) {
+        super.init(name, age)
+        this.major = major
+    }
+    
+    fn introduce() {
+        super.introduce()
+        print("I study", this.major)
+    }
+}
+
+let student = new Student("Alice", 20, "Computer Science")
+student.introduce()
+```
+
+### 예외 처리
+```finelang
+try {
+    let result = 10 / 0
+} catch ZeroDivisionError as e {
+    print("Error:", e.message)
+} catch Exception as e {
+    print("Unknown error:", e.message)
+} finally {
+    print("Cleanup complete")
+}
+```
+
+### 행렬 연산 (AI/ML)
+```finelang
+# 행렬 생성
+let X = [[1, 2, 3],
+         [4, 5, 6]]
+let W = [[0.1, 0.2],
+         [0.3, 0.4],
+         [0.5, 0.6]]
+
+# 행렬 곱셈 (신경망 forward pass)
+let Y = X @ W
+print("Output:", Y)
+
+# 개별 요소 접근
+print("Y[0][0] =", Y[0][0])
+```
 
 ---
 
-## 🎨 주요 연산자
+## 📈 버전 히스토리
 
-**벡터 연산:**
-- `+` - 요소별 덧셈
-- `-` - 요소별 뺄셈  
-- `*` - 요소별 곱셈
-- `@` - 내적 (dot product)
-
-**비교 연산:**
-- `==`, `!=`, `<`, `<=`, `>`, `>=`
-
-### ✅ 완료된 버전
+### 최근 릴리스
 
 | 버전 | 날짜 | 주요 기능 |
 |------|------|----------|
-| v1.0.0 | 2025-01-20 | 기본 문법, 변수, 함수, 제어문, 배열, 벡터 연산 |
-| v1.1.0 | 2025-01-22 | 딕셔너리 (해시맵) |
-| v1.2.0 | 2025-01-24 | 클래스, 메서드, new 키워드 |
-| v1.3.0 | 2025-01-25 | 필드 접근/수정, this, 생성자 |
-| v1.4.0 | 2025-01-26 | 상속, super, 메서드 오버라이딩 |
-| v1.5.0 | 2025-01-26 | 예외 처리 (try/catch/throw/finally) |
-| v1.6.0 | 2025-01-26 | 타입별 catch, assert 문 |
-| v1.7.0 | 2025-01-26 | 스택 추적, 재귀 깊이 제한 |
-| v1.8.0 | 2025-01-26 | 고차 함수 (map, filter, reduce), 일급 함수 |
-| v2.0.0 | 2025-01-27 | 모듈 시스템 (import/export), 표준 라이브러리 |
-| v2.1.0 | 2025-01-09 | 행렬 타입, 행렬 생성 및 인덱싱 |
-| v2.2.0 | 2025-01-09 | 행렬 연산 (+, -, *, @) |
-| v2.2.1 | 2025-01-09 | 2차원 인덱싱 (m[i][j]) |
+| **v2.2.4** | 2025-01-09 | ➗ 나머지(%), 몫(//) 연산자 |
+| **v2.2.3** | 2025-01-09 | 🏷️ 모듈 별칭 (import as) |
+| **v2.2.2** | 2025-01-09 | 📦 from...import 구문 |
+| **v2.2.1** | 2025-01-09 | 🎯 2차원 인덱싱 (m[i][j]) |
+| **v2.2.0** | 2025-01-09 | ➕ 행렬 연산 (+, -, *, @) |
+| **v2.1.0** | 2025-01-09 | 📊 행렬 타입 |
+| **v2.0.0** | 2025-01-27 | 📦 모듈 시스템 |
+| v1.9.0 | 2025-01-27 | 모듈 기초 구조 |
+| v1.8.0 | 2025-01-27 | 고차 함수 (map, filter, reduce) |
+| v1.7.0 | 2025-01-26 | 스택 추적 |
 
-### 향후 개발 계획
+*전체 변경사항은 [CHANGELOG.md](CHANGELOG.md) 참조*
 
-#### v2.3.0 - 행렬 유틸리티 (계획 중)
-- � **행렬 함수**: shape, transpose, dot, inverse, det
-- � **행렬 생성**: eye, zeros, ones
-- 🎯 **2차원 인덱싱**: m[i][j] 접근
+---
 
-#### v3.0.0 - 모듈 시스템 확장
-- [ ] from...import 구문
-- [ ] 모듈 별칭 (import as)
-- [ ] 패키지 시스템
+## 🛠️ 개발
+
+### 빌드 명령어
+
+```bash
+# 전체 빌드
+make
+
+# 클린 빌드
+make clean
+make
+
+# 디버그 빌드
+make debug
+
+# 설치
+sudo make install
+
+# 제거
+sudo make uninstall
+```
+
+### 테스트 실행
+
+```bash
+# 기본 테스트
+./finelang examples/hello.fine
+
+# 행렬 테스트
+./finelang examples/matrix_operations.fine
+
+# 모듈 테스트
+./finelang test_from_import.fine
+
+# 연산자 테스트
+./finelang test_modulo_floordiv.fine
+```
+
+---
+
+## 🗺️ 로드맵
+
+### v2.3.0 - 행렬 유틸리티 (예정)
+- [ ] shape() - 행렬 크기
+- [ ] transpose() - 전치
+- [ ] dot() - 내적
+- [ ] eye() - 단위 행렬
+- [ ] zeros(), ones() - 특수 행렬
+
+### v3.0.0 - JIT 컴파일러 (계획 중)
+- [ ] LLVM 기반 JIT 컴파일
+- [ ] 성능 최적화
+- [ ] 타입 추론
+
+### 향후 계획
+- [ ] GPU 가속 지원
 - [ ] 패키지 매니저
-
-#### v4.0.0 - 성능 최적화
-- [ ] JIT 컴파일러 (LLVM)
-- [ ] GPU 가속
-- [ ] 병렬 처리 최적화
+- [ ] NumPy/TensorFlow 호환 레이어
 
 ---
 
-## 🎉 주요 성과
+## 🤝 기여
 
-### v2.2.1 (최신)
-- ✅ **2차원 인덱싱** 지원: m[i][j] 문법
-- ✅ **NumPy/MATLAB 스타일** 다차원 배열 접근
-- ✅ **직관적인 행렬 요소 접근**
+FineLang은 오픈소스 프로젝트입니다. 기여를 환영합니다!
 
-### v2.2.0
-- ✅ **행렬 연산** 완성: 덧셈, 뺄셈, 스칼라 곱, 행렬 곱
-- ✅ **NumPy 스타일 @ 연산자**
-- ✅ **완전한 선형대수** 지원
-
-### v2.0.0
-- ✅ **모듈 시스템** 구현
-- ✅ **표준 라이브러리**: math, string
-- ✅ **직접 메서드 호출**: module.function()
-
-### v1.8.0
-- ✅ **고차 함수** 구현: map, filter, reduce
-- ✅ **일급 함수** 지원
-- ✅ **함수 체이닝** 가능
-
-### v1.7.0
-- ✅ **스택 추적(Stack Trace)** 구현
-- ✅ Python 스타일 Traceback 출력
-- ✅ 재귀 깊이 제한 (1000 프레임)
-
-### 전체 프로젝트
-- ✅ **현대적 프로그래밍 언어**의 모든 핵심 기능 구현
-- ✅ **OOP 완전 지원**: 클래스, 상속, 다형성
-- ✅ **고급 예외 처리**: 타입별 catch, assert, 스택 추적
-- ✅ **함수형 프로그래밍**: 고차 함수, 일급 함수
-- ✅ **AI/ML 특화**: 벡터 연산, 행렬 연산, 모듈 시스템
-- ✅ **5,650+ LOC**의 견고한 인터프리터
-- ✅ **포괄적 문서화**: 문법 가이드, 예제, 변경 이력
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ---
 
-## 📄 라이센스
+## � 라이센스
 
-MIT License - 자유롭게 사용, 수정, 배포할 수 있습니다.
+MIT License - 자세한 내용은 [LICENSE](LICENSE) 파일 참조
 
 ---
 
-**FineLang v2.2.1** - AI를 위한 간결하고 강력한 언어 🚀
+## 👤 개발자
+
+**Finefinee**
+- GitHub: [@Finefinee](https://github.com/Finefinee)
+- Repository: [ppeol-jit](https://github.com/Finefinee/ppeol-jit)
+
+---
+
+## ⭐ 지원
+
+이 프로젝트가 도움이 되었다면 ⭐ Star를 눌러주세요!
+
+---
+
+<div align="center">
+
+**Made with ❤️ for AI/ML developers**
+
+[Documentation](SYNTAX_GUIDE.md) • [Changelog](CHANGELOG.md) • [Examples](examples/)
+

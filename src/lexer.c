@@ -192,7 +192,13 @@ Token* lexer_next_token(Lexer* lexer) {
                 }
                 return token_create(TOKEN_MINUS, "-", lexer->line, column);
             case '*': return token_create(TOKEN_MULTIPLY, "*", lexer->line, column);
-            case '/': return token_create(TOKEN_DIVIDE, "/", lexer->line, column);
+            case '/':
+                if (lexer->current_char == '/') {
+                    lexer_advance(lexer);
+                    return token_create(TOKEN_FLOOR_DIV, "//", lexer->line, column);
+                }
+                return token_create(TOKEN_DIVIDE, "/", lexer->line, column);
+            case '%': return token_create(TOKEN_MODULO, "%", lexer->line, column);
             case '@': return token_create(TOKEN_AT, "@", lexer->line, column);
             case '(': return token_create(TOKEN_LPAREN, "(", lexer->line, column);
             case ')': return token_create(TOKEN_RPAREN, ")", lexer->line, column);
@@ -279,6 +285,8 @@ const char* token_type_to_string(TokenType type) {
         case TOKEN_MINUS: return "MINUS";
         case TOKEN_MULTIPLY: return "MULTIPLY";
         case TOKEN_DIVIDE: return "DIVIDE";
+        case TOKEN_MODULO: return "MODULO";
+        case TOKEN_FLOOR_DIV: return "FLOOR_DIV";
         case TOKEN_AT: return "AT";
         case TOKEN_ASSIGN: return "ASSIGN";
         case TOKEN_EQUAL: return "EQUAL";
