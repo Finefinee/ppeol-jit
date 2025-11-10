@@ -1075,6 +1075,105 @@ Value* interpreter_eval_function_call(Interpreter* interp, ASTNode* node) {
         }
     }
     
+    // 타입 체크 함수들 (v2.2.5)
+    if (strcmp(name, "is_null") == 0) {
+        if (node->data.function_call.arg_count > 0) {
+            Value* arg = interpreter_eval(interp, node->data.function_call.args[0]);
+            int result = (arg->type == VAL_NULL);
+            value_free(arg);
+            return value_create_number(result);
+        }
+        return value_create_number(0);
+    }
+    
+    if (strcmp(name, "is_number") == 0) {
+        if (node->data.function_call.arg_count > 0) {
+            Value* arg = interpreter_eval(interp, node->data.function_call.args[0]);
+            int result = (arg->type == VAL_NUMBER);
+            value_free(arg);
+            return value_create_number(result);
+        }
+        return value_create_number(0);
+    }
+    
+    if (strcmp(name, "is_string") == 0) {
+        if (node->data.function_call.arg_count > 0) {
+            Value* arg = interpreter_eval(interp, node->data.function_call.args[0]);
+            int result = (arg->type == VAL_STRING);
+            value_free(arg);
+            return value_create_number(result);
+        }
+        return value_create_number(0);
+    }
+    
+    if (strcmp(name, "is_bool") == 0) {
+        if (node->data.function_call.arg_count > 0) {
+            Value* arg = interpreter_eval(interp, node->data.function_call.args[0]);
+            // FineLang에서 boolean은 숫자로 표현 (0 또는 1)
+            int result = (arg->type == VAL_NUMBER && 
+                         (arg->data.number == 0.0 || arg->data.number == 1.0));
+            value_free(arg);
+            return value_create_number(result);
+        }
+        return value_create_number(0);
+    }
+    
+    if (strcmp(name, "is_array") == 0) {
+        if (node->data.function_call.arg_count > 0) {
+            Value* arg = interpreter_eval(interp, node->data.function_call.args[0]);
+            int result = (arg->type == VAL_ARRAY);
+            value_free(arg);
+            return value_create_number(result);
+        }
+        return value_create_number(0);
+    }
+    
+    if (strcmp(name, "is_dict") == 0) {
+        if (node->data.function_call.arg_count > 0) {
+            Value* arg = interpreter_eval(interp, node->data.function_call.args[0]);
+            int result = (arg->type == VAL_DICT);
+            value_free(arg);
+            return value_create_number(result);
+        }
+        return value_create_number(0);
+    }
+    
+    if (strcmp(name, "is_matrix") == 0) {
+        if (node->data.function_call.arg_count > 0) {
+            Value* arg = interpreter_eval(interp, node->data.function_call.args[0]);
+            int result = (arg->type == VAL_MATRIX);
+            value_free(arg);
+            return value_create_number(result);
+        }
+        return value_create_number(0);
+    }
+    
+    if (strcmp(name, "typeof") == 0) {
+        if (node->data.function_call.arg_count > 0) {
+            Value* arg = interpreter_eval(interp, node->data.function_call.args[0]);
+            char* type_name = "";
+            
+            switch (arg->type) {
+                case VAL_NULL:      type_name = "null"; break;
+                case VAL_NUMBER:    type_name = "number"; break;
+                case VAL_STRING:    type_name = "string"; break;
+                case VAL_ARRAY:     type_name = "array"; break;
+                case VAL_DICT:      type_name = "dict"; break;
+                case VAL_MATRIX:    type_name = "matrix"; break;
+                case VAL_FUNCTION:  type_name = "function"; break;
+                case VAL_CLASS:     type_name = "class"; break;
+                case VAL_INSTANCE:  type_name = "instance"; break;
+                case VAL_MODULE:    type_name = "module"; break;
+                case VAL_EXCEPTION: type_name = "exception"; break;
+                default:            type_name = "unknown"; break;
+            }
+            
+            value_free(arg);
+            return value_create_string(type_name);
+        }
+        return value_create_string("undefined");
+    }
+    
     // map 함수: map(function, array)
     // map 함수: map(function, array)
     if (strcmp(name, "map") == 0) {

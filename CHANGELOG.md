@@ -1,5 +1,89 @@
 # FineLang 변경 이력
 
+## v2.2.5 (2025-01-10) - 타입 체크 함수 🔍
+
+### 새로운 기능
+
+#### null 체크 함수
+- ✨ **is_null(value)**: null 값인지 확인
+  ```finelang
+  let x = null
+  if is_null(x) {
+      print("x는 null입니다")
+  }
+  ```
+
+#### 자료형 체크 함수
+- ✨ **is_number(value)**: 숫자인지 확인
+- ✨ **is_string(value)**: 문자열인지 확인
+- ✨ **is_bool(value)**: boolean(0 또는 1)인지 확인
+- ✨ **is_array(value)**: 배열인지 확인
+- ✨ **is_dict(value)**: 딕셔너리인지 확인
+- ✨ **is_matrix(value)**: 행렬인지 확인
+
+  ```finelang
+  let num = 42
+  let str = "hello"
+  let arr = [1, 2, 3]
+  
+  print(is_number(num))   # 1 (true)
+  print(is_string(str))   # 1 (true)
+  print(is_array(arr))    # 1 (true)
+  ```
+
+#### 자료형 확인 함수
+- ✨ **typeof(value)**: 값의 자료형을 문자열로 반환
+  ```finelang
+  print(typeof(null))      # "null"
+  print(typeof(42))        # "number"
+  print(typeof("hi"))      # "string"
+  print(typeof([1,2]))     # "array"
+  print(typeof({x:10}))    # "dict"
+  print(typeof([[1,2]]))   # "matrix"
+  ```
+
+### 실용 예제
+
+#### 타입 안전 함수
+```finelang
+fn safe_divide(a, b) {
+    if is_null(a) {
+        print("Error: a is null")
+        return null
+    }
+    if is_null(b) {
+        print("Error: b is null")
+        return null
+    }
+    if is_number(a) == 0 {
+        print("Error: a is not a number")
+        return null
+    }
+    if is_number(b) == 0 {
+        print("Error: b is not a number")
+        return null
+    }
+    if b == 0 {
+        print("Error: division by zero")
+        return null
+    }
+    return a / b
+}
+```
+
+### 구현 세부사항
+
+**인터프리터 수정** (`src/interpreter.c`)
+- `is_null()`, `is_number()`, `is_string()`, `is_bool()` 함수 추가
+- `is_array()`, `is_dict()`, `is_matrix()` 함수 추가
+- `typeof()` 함수: 모든 자료형 문자열 반환
+
+### 호환성
+- ✅ 기존 코드와 100% 호환
+- ✅ 모든 자료형 지원 (null, number, string, array, dict, matrix, function, class, instance, module, exception)
+
+---
+
 ## v2.2.4 (2025-01-09) - 나머지/몫 연산자 ➗
 
 ### 새로운 기능

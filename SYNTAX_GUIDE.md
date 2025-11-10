@@ -1,9 +1,9 @@
 # FineLang 문법 가이드 📖
 
-> **FineLang v2.2.4** - AI/ML 작업에 최적화된 간결하고 강력한 프로그래밍 언어
+> **FineLang v2.2.5** - AI/ML 작업에 최적화된 간결하고 강력한 프로그래밍 언어
 
-**최종 업데이트**: 2025-01-09  
-**버전**: v2.2.4
+**최종 업데이트**: 2025-01-10  
+**버전**: v2.2.5
 
 ---
 
@@ -11,18 +11,25 @@
 
 1. [기본 문법](#1-기본-문법)
 2. [데이터 타입](#2-데이터-타입)
+   - [Null](#21-null)
+   - [Number](#22-number-숫자)
+   - [String](#23-string-문자열)
+   - [Array](#24-array-배열)
+   - [Matrix](#25-matrix-행렬--v210)
+   - [Dictionary](#26-dictionary-딕셔너리)
 3. [연산자](#3-연산자)
 4. [제어 구조](#4-제어-구조)
 5. [함수](#5-함수)
 6. [자료 구조](#6-자료-구조)
-   - [배열](#배열-array)
-   - [행렬](#행렬-matrix-v210)
-   - [딕셔너리](#딕셔너리-dictionary)
 7. [객체 지향 프로그래밍](#7-객체-지향-프로그래밍)
 8. [예외 처리](#8-예외-처리)
-9. [고차 함수](#9-고차-함수)
+9. [내장 함수](#9-내장-함수)
+   - [입출력 함수](#입출력)
+   - [배열 함수](#배열-함수)
+   - [딕셔너리 함수](#딕셔너리-함수)
+   - [타입 체크 함수](#타입-체크-함수-v225)
+   - [고차 함수](#고차-함수-v180)
 10. [모듈 시스템](#10-모듈-시스템)
-11. [내장 함수](#11-내장-함수)
 
 ---
 
@@ -60,7 +67,33 @@ let matrix = [[1, 2], [3, 4]]  # 행렬
 
 ## 2. 데이터 타입
 
-### 2.1 Number (숫자)
+### 2.1 Null
+값이 없음을 나타내는 특수한 타입입니다.
+
+```finelang
+let x = null
+let result = null
+
+# null 체크
+if is_null(x) {
+    print("x는 null입니다")
+}
+
+# 함수에서 null 반환
+fn maybe_divide(a, b) {
+    if b == 0 {
+        return null  # 유효하지 않은 경우 null 반환
+    }
+    return a / b
+}
+
+let value = maybe_divide(10, 0)
+if is_null(value) {
+    print("나눗셈 실패")
+}
+```
+
+### 2.2 Number (숫자)
 정수와 실수를 구분 없이 사용합니다.
 
 ```finelang
@@ -70,7 +103,7 @@ let negative = -10
 let scientific = 1.5e10  # 과학적 표기법 (향후 지원 예정)
 ```
 
-### 2.2 String (문자열)
+### 2.3 String (문자열)
 큰따옴표(`"`)로 문자열을 생성합니다.
 
 ```finelang
@@ -82,7 +115,7 @@ let multiline = "첫 번째 줄\n두 번째 줄"  # 이스케이프 시퀀스
 # let full = "Hello" + " " + "World"
 ```
 
-### 2.3 Array (배열)
+### 2.4 Array (배열)
 여러 값을 순서대로 저장하는 동적 배열입니다.
 
 ```finelang
@@ -101,7 +134,7 @@ numbers[0] = 10
 print(numbers)  # [10, 2, 3, 4, 5]
 ```
 
-### 2.4 Matrix (행렬) 🆕 v2.1.0
+### 2.5 Matrix (행렬) 🆕 v2.1.0
 2차원 배열이 자동으로 행렬로 인식됩니다.
 
 ```finelang
@@ -123,7 +156,7 @@ print(2 * A)    # 스칼라 곱
 print(A @ B)    # 행렬 곱
 ```
 
-### 2.5 Dictionary (딕셔너리)
+### 2.6 Dictionary (딕셔너리)
 키-값 쌍으로 데이터를 저장하는 해시맵입니다. (v1.1.0+)
 
 ```finelang
@@ -1011,6 +1044,117 @@ let data = {x: 10, y: 20, z: 30}
 let val_list = values(data)  # [10, 20, 30]
 ```
 
+### 타입 체크 함수 (v2.2.5)
+
+#### is_null(value)
+값이 null인지 확인합니다.
+
+```finelang
+let x = null
+if is_null(x) {
+    print("x는 null입니다")
+}
+
+print(is_null(null))  # 1 (true)
+print(is_null(42))    # 0 (false)
+```
+
+#### is_number(value)
+값이 숫자인지 확인합니다.
+
+```finelang
+print(is_number(42))      # 1
+print(is_number(3.14))    # 1
+print(is_number("hello")) # 0
+```
+
+#### is_string(value)
+값이 문자열인지 확인합니다.
+
+```finelang
+print(is_string("hello")) # 1
+print(is_string(42))      # 0
+```
+
+#### is_bool(value)
+값이 boolean(0 또는 1)인지 확인합니다.
+
+```finelang
+print(is_bool(1))   # 1
+print(is_bool(0))   # 1
+print(is_bool(2))   # 0
+```
+
+#### is_array(value)
+값이 배열인지 확인합니다.
+
+```finelang
+print(is_array([1, 2, 3]))  # 1
+print(is_array({x: 10}))    # 0
+```
+
+#### is_dict(value)
+값이 딕셔너리인지 확인합니다.
+
+```finelang
+print(is_dict({x: 10, y: 20}))  # 1
+print(is_dict([1, 2, 3]))       # 0
+```
+
+#### is_matrix(value)
+값이 행렬인지 확인합니다.
+
+```finelang
+let m = [[1, 2], [3, 4]]
+print(is_matrix(m))        # 1
+print(is_matrix([1, 2]))   # 0
+```
+
+#### typeof(value)
+값의 자료형을 문자열로 반환합니다.
+
+```finelang
+print(typeof(null))        # "null"
+print(typeof(42))          # "number"
+print(typeof("hello"))     # "string"
+print(typeof([1, 2]))      # "array"
+print(typeof({x: 10}))     # "dict"
+print(typeof([[1, 2]]))    # "matrix"
+print(typeof(fn() {}))     # "function"
+```
+
+**타입 안전 함수 예제**
+
+```finelang
+fn safe_divide(a, b) {
+    if is_null(a) {
+        print("Error: a is null")
+        return null
+    }
+    if is_null(b) {
+        print("Error: b is null")
+        return null
+    }
+    if is_number(a) == 0 {
+        print("Error: a is not a number")
+        return null
+    }
+    if is_number(b) == 0 {
+        print("Error: b is not a number")
+        return null
+    }
+    if b == 0 {
+        print("Error: division by zero")
+        return null
+    }
+    return a / b
+}
+
+print(safe_divide(10, 2))     # 5
+print(safe_divide(10, 0))     # Error: division by zero, null
+print(safe_divide(10, null))  # Error: b is null, null
+```
+
 ### 고차 함수 (v1.8.0)
 
 #### map(function, array)
@@ -1210,6 +1354,14 @@ try {
 | v1.7.0 | 스택 추적 (Stack Trace) |
 | v1.8.0 | 고차 함수 (map, filter, reduce) |
 | v1.9.0 | 모듈 시스템 (import/export) |
+| v2.0.0 | 직접 메서드 호출 (module.function()) |
+| v2.1.0 | 행렬 (Matrix) 타입 |
+| v2.2.0 | 행렬 연산 (+, -, *, @) |
+| v2.2.1 | 2차원 인덱싱 (m[i][j]) |
+| v2.2.2 | from...import 구문 |
+| v2.2.3 | 모듈 별칭 (as) |
+| v2.2.4 | 나머지(%), 몫(//) 연산자 |
+| v2.2.5 | 타입 체크 함수 (is_null, typeof 등) |
 
 ---
 
@@ -1434,4 +1586,4 @@ print("=== Utils 모듈 테스트 ===")
 
 ---
 
-**FineLang v2.2.4** - AI/ML을 위한 간결하고 강력한 언어 🚀
+**FineLang v2.2.5** - AI/ML을 위한 간결하고 강력한 언어 🚀

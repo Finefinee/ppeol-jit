@@ -1,9 +1,9 @@
 # FineLang 🚀
 
-> **현재 버전: v2.2.4** | AI/ML에 최적화된 간결하고 강력한 프로그래밍 언어
+> **현재 버전: v2.2.5** | AI/ML에 최적화된 간결하고 강력한 프로그래밍 언어
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]()
-[![Version](https://img.shields.io/badge/version-2.2.4-blue)]()
+[![Version](https://img.shields.io/badge/version-2.2.5-blue)]()
 [![License](https://img.shields.io/badge/license-MIT-green)]()
 [![Language](https://img.shields.io/badge/language-C-orange)]()
 
@@ -17,7 +17,7 @@ FineLang은 **AI/ML 개발**과 **일반 프로그래밍**을 위해 설계된 �
 
 | 항목 | 내용 |
 |------|------|
-| **현재 버전** | v2.2.4 (2025-01-09) |
+| **현재 버전** | v2.2.5 (2025-01-10) |
 | **구현 언어** | C (C99 표준) |
 | **코드 라인** | ~5,700 LOC |
 | **라이센스** | MIT |
@@ -35,6 +35,7 @@ FineLang은 **AI/ML 개발**과 **일반 프로그래밍**을 위해 설계된 �
 - 📦 **모듈 시스템**: import/export, from...import, as 별칭 완벽 지원
 - 🎯 **완전한 OOP**: 클래스, 상속, this/super, 메서드 오버라이딩
 - 🛡️ **예외 처리**: try/catch/finally, 타입별 catch, 스택 추적
+- 🔍 **타입 체크**: is_null(), is_number(), typeof() 등 타입 안전 함수
 - 🔧 **간결한 문법**: Python과 유사하여 배우기 쉬움
 
 ### 🧮 풍부한 연산자 (v2.2.4)
@@ -109,6 +110,54 @@ print(evens)    # [2, 4]
 # reduce - 집계
 let sum = reduce(numbers, fn(acc, x) { return acc + x }, 0)
 print(sum)      # 15
+```
+
+### 🔍 타입 체크 함수 (v2.2.5)
+
+```finelang
+# Null 타입
+let x = null  # 값이 없음을 나타냄
+print(typeof(x))  # "null"
+
+# null 체크
+if is_null(x) {
+    print("x는 null입니다")
+}
+
+# 함수에서 null 반환
+fn safe_get(arr, index) {
+    if index < 0 { return null }
+    if index >= len(arr) { return null }
+    return arr[index]
+}
+
+let numbers = [10, 20, 30]
+print(safe_get(numbers, 1))   # 20
+print(safe_get(numbers, 99))  # null
+
+# 타입 확인
+print(is_number(42))      # 1 (true)
+print(is_string("hi"))    # 1
+print(is_array([1,2,3]))  # 1
+print(is_dict({x: 10}))   # 1
+print(is_matrix([[1,2]])) # 1
+
+# typeof로 타입 얻기
+print(typeof(null))      # "null"
+print(typeof(42))        # "number"
+print(typeof("hello"))   # "string"
+print(typeof([1, 2]))    # "array"
+print(typeof({x: 10}))   # "dict"
+
+# 안전한 함수 작성
+fn safe_divide(a, b) {
+    if is_null(a) { return null }
+    if is_null(b) { return null }
+    if is_number(a) == 0 { return null }
+    if is_number(b) == 0 { return null }
+    if b == 0 { return null }
+    return a / b
+}
 ```
 
 ---
