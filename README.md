@@ -1,9 +1,9 @@
 # FineLang 🚀
 
-> **현재 버전: v2.2.6** | AI/ML에 최적화된 간결하고 강력한 프로그래밍 언어
+> **현재 버전: v2.2.7** | AI/ML에 최적화된 간결하고 강력한 프로그래밍 언어
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]()
-[![Version](https://img.shields.io/badge/version-2.2.6-blue)]()
+[![Version](https://img.shields.io/badge/version-2.2.7-blue)]()
 [![License](https://img.shields.io/badge/license-MIT-green)]()
 [![Language](https://img.shields.io/badge/language-C-orange)]()
 
@@ -17,7 +17,7 @@ FineLang은 **AI/ML 개발**과 **일반 프로그래밍**을 위해 설계된 �
 
 | 항목 | 내용 |
 |------|------|
-| **현재 버전** | v2.2.6 (2025-01-10) |
+| **현재 버전** | v2.2.7 (2025-01-10) |
 | **구현 언어** | C (C99 표준) |
 | **코드 라인** | ~5,700 LOC |
 | **라이센스** | MIT |
@@ -74,6 +74,11 @@ print(A + B)     # 덧셈
 print(A - B)     # 뺄셈
 print(2 * A)     # 스칼라 곱
 print(A @ B)     # 행렬 곱
+
+# 문자열 연산 (Python 스타일)
+print("Hello" + " " + "World")   # 연결
+print("Ha" * 3)                  # 반복: "HaHaHa"
+print("-" * 20)                  # "--------------------"
 ```
 
 ### 📦 모듈 시스템 (v2.0.0 - v2.2.3)

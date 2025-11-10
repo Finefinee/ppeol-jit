@@ -1001,6 +1001,57 @@ Value* interpreter_eval_binary(Interpreter* interp, ASTNode* node) {
         else if (strcmp(op, "<=") == 0) result = value_create_number(l <= r ? 1 : 0);
         else if (strcmp(op, ">") == 0) result = value_create_number(l > r ? 1 : 0);
         else if (strcmp(op, ">=") == 0) result = value_create_number(l >= r ? 1 : 0);
+    } else if (left->type == VAL_STRING && right->type == VAL_STRING) {
+        // 문자열 + 문자열 = 연결
+        if (strcmp(op, "+") == 0) {
+            int len = strlen(left->data.string) + strlen(right->data.string);
+            char* concatenated = (char*)malloc(len + 1);
+            strcpy(concatenated, left->data.string);
+            strcat(concatenated, right->data.string);
+            result = value_create_string(concatenated);
+            free(concatenated);
+        }
+        // 문자열 비교
+        else if (strcmp(op, "==") == 0) {
+            result = value_create_number(strcmp(left->data.string, right->data.string) == 0 ? 1 : 0);
+        }
+        else if (strcmp(op, "!=") == 0) {
+            result = value_create_number(strcmp(left->data.string, right->data.string) != 0 ? 1 : 0);
+        }
+    } else if (left->type == VAL_STRING && right->type == VAL_NUMBER) {
+        // 문자열 * 숫자 = 반복
+        if (strcmp(op, "*") == 0) {
+            int repeat = (int)right->data.number;
+            if (repeat < 0) repeat = 0;
+            
+            int len = strlen(left->data.string) * repeat;
+            char* repeated = (char*)malloc(len + 1);
+            repeated[0] = '\0';
+            
+            for (int i = 0; i < repeat; i++) {
+                strcat(repeated, left->data.string);
+            }
+            
+            result = value_create_string(repeated);
+            free(repeated);
+        }
+    } else if (left->type == VAL_NUMBER && right->type == VAL_STRING) {
+        // 숫자 * 문자열 = 반복
+        if (strcmp(op, "*") == 0) {
+            int repeat = (int)left->data.number;
+            if (repeat < 0) repeat = 0;
+            
+            int len = strlen(right->data.string) * repeat;
+            char* repeated = (char*)malloc(len + 1);
+            repeated[0] = '\0';
+            
+            for (int i = 0; i < repeat; i++) {
+                strcat(repeated, right->data.string);
+            }
+            
+            result = value_create_string(repeated);
+            free(repeated);
+        }
     } else if (left->type == VAL_ARRAY && right->type == VAL_ARRAY) {
         // 벡터 연산
         if (left->data.array.count == right->data.array.count) {
