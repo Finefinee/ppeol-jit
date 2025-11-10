@@ -1267,9 +1267,60 @@ import math as m
 print(m.abs(-5))     # 짧은 별칭 사용
 ```
 
-### 10.6 v2.0의 제한사항
+### 10.6 모듈 별칭 (v2.2.3+)
 
-### 10.7 모듈 예제
+모듈을 짧은 이름이나 의미있는 이름으로 별칭 지정할 수 있습니다:
+
+```finelang
+# 긴 모듈 이름을 짧게
+import math as m
+print(m.abs(-42))    # 42
+print(m.PI)          # 3.14159
+
+# 의미있는 별칭
+import math as mathematics
+print(mathematics.max(10, 20))  # 20
+
+# 같은 모듈을 여러 별칭으로 (테스트용)
+import math as m1
+import math as m2
+print(m1.abs(-1))    # 1
+print(m2.abs(-2))    # 2
+```
+
+**별칭 사용 시나리오**
+
+1. **긴 모듈 이름 단축**
+   ```finelang
+   import very_long_module_name as vlmn
+   ```
+
+2. **네이밍 충돌 방지**
+   ```finelang
+   import utils as my_utils
+   import other_lib as other
+   ```
+
+3. **코드 가독성 향상**
+   ```finelang
+   import math as m
+   # m.sin(), m.cos() - 짧고 명확
+   ```
+
+**from...import와 별칭 혼용**
+
+```finelang
+# 둘 다 사용 가능
+import math as m
+from math import PI
+
+print(m.abs(-5))     # 별칭으로 접근
+print(PI)            # 직접 접근
+```
+
+### 10.7 v2.0의 제한사항
+
+### 10.8 모듈 예제
 
 **완전한 예제: 사용자 정의 유틸리티 모듈**
 

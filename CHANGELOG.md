@@ -1,5 +1,67 @@
 # FineLang 변경 이력
 
+## v2.2.3 (2025-01-09) - 모듈 별칭(as) 완성 🏷️
+
+### 새로운 기능
+
+#### 모듈 별칭 지원
+- ✨ **import module as alias**: 모듈을 별칭으로 사용
+  ```finelang
+  import math as m
+  print(m.abs(-42))    # 42
+  print(m.PI)          # 3.14159
+  ```
+
+- ✨ **긴 모듈 이름 단축**: 가독성과 타이핑 편의성 향상
+  ```finelang
+  import very_long_module_name as vlmn
+  vlmn.some_function()
+  ```
+
+- ✨ **네이밍 충돌 방지**: 여러 모듈의 같은 이름 함수 구분
+  ```finelang
+  import utils as my_utils
+  import other_lib as other
+  ```
+
+### 사용 예제
+
+**기본 사용**:
+```finelang
+import math as m
+print(m.max(10, 20))  # 20
+print(m.min(5, 3))    # 3
+```
+
+**from...import와 혼용**:
+```finelang
+import math as m
+from math import PI
+
+print(m.abs(-5))     # 별칭으로 접근
+print(PI)            # 직접 접근
+```
+
+**같은 모듈 여러 별칭** (테스트/디버깅용):
+```finelang
+import math as m1
+import math as m2
+print(m1.abs(-1))    # 1
+print(m2.abs(-2))    # 2
+```
+
+### 구현 상태
+
+- ✅ **파서**: `as` 키워드 파싱, alias 저장
+- ✅ **인터프리터**: alias를 변수 이름으로 사용하여 모듈 등록
+- ✅ **호환성**: 기존 import, from...import와 완벽 공존
+
+### 문서 업데이트
+- ✅ `SYNTAX_GUIDE.md`: 10.6 모듈 별칭 섹션 추가
+- ✅ `examples/module_alias.fine`: 별칭 사용 예제
+
+---
+
 ## v2.2.2 (2025-01-09) - from...import 구문 🎯
 
 ### 새로운 기능
@@ -40,6 +102,67 @@
 - `src/parser.c`: `parser_parse_import` 함수 수정
 - `src/interpreter.c`: `AST_IMPORT` 케이스에서 `names` 배열 처리
 - `test_from_import.fine`: from...import 테스트 파일
+
+---
+
+# FineLang 변경 이력
+
+## v2.2.2 (2025-01-09) - from...import 구문 🎯
+
+### 새로운 기능
+
+#### from...import 선택적 임포트
+- ✨ **from module import name1, name2**: 모듈에서 특정 심볼만 가져오기
+  ```finelang
+  from math import abs, max, PI
+  print(abs(-5))      # 5 - math. 접두사 없이 직접 사용
+  print(max(10, 20))  # 20
+  print(PI)           # 3.14159
+  ```
+
+- ✨ **네임스페이스 오염 방지**: 필요한 함수만 임포트하여 깔끔한 코드 작성
+  ```finelang
+  # 일반 import는 네임스페이스 접근
+  import math
+  print(math.abs(-5))  # math. 필요
+  
+  # from...import는 직접 접근
+  from math import abs
+  print(abs(-5))       # 직접 사용
+  ```
+
+- ✨ **여러 심볼 동시 임포트**: 쉼표로 구분하여 한 번에 여러 함수 가져오기
+  ```finelang
+  from string import length, repeat, is_empty
+  ```
+
+### 구현 세부사항
+
+**파서 수정** (`src/parser.c`)
+- `parser_parse_statement()`: `TOKEN_FROM`으로 시작하는 문장 처리 추가
+- `parser_parse_import()`: 
+  - `from module import ...` 구문 파싱
+  - 심볼 이름들을 `names` 배열에 저장
+  - `name_count`로 개수 추적
+
+**인터프리터 연동** (`src/interpreter.c`)
+- `AST_IMPORT` 처리 시 `names` 배열 확인
+- 지정된 심볼만 현재 환경에 선택적으로 추가
+- 모듈의 export에서 해당 심볼 검색 및 복사
+
+### 호환성
+
+**기존 import 구문과 완벽 공존**:
+```finelang
+# 모두 정상 작동
+import math                    # 전체 모듈
+import math as m               # 별칭
+from math import abs, max      # 선택적 임포트
+```
+
+### 문서 업데이트
+- ✅ `SYNTAX_GUIDE.md`: 10.5 from...import 구문 섹션 추가
+- ✅ `README.md`: 모듈 시스템 기능 설명 업데이트
 
 ---
 
