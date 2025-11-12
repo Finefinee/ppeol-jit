@@ -196,8 +196,12 @@ Token* lexer_next_token(Lexer* lexer) {
             case '*': return token_create(TOKEN_MULTIPLY, "*", lexer->line, column);
             case '/':
                 if (lexer->current_char == '/') {
-                    lexer_advance(lexer);
-                    return token_create(TOKEN_FLOOR_DIV, "//", lexer->line, column);
+                    // 주석 처리: // 다음 모든 문자를 줄 끝까지 건너뜀
+                    lexer_advance(lexer);  // 두 번째 / 건너뛰기
+                    while (lexer->current_char != '\n' && lexer->current_char != '\0') {
+                        lexer_advance(lexer);
+                    }
+                    return lexer_next_token(lexer);  // 다음 토큰 반환
                 }
                 return token_create(TOKEN_DIVIDE, "/", lexer->line, column);
             case '%': return token_create(TOKEN_MODULO, "%", lexer->line, column);

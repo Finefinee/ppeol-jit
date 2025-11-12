@@ -1,9 +1,9 @@
 # FineLang 🚀
 
-> **현재 버전: v2.2.8** | AI/ML에 최적화된 간결하고 강력한 프로그래밍 언어
+> **현재 버전: v2.3.0** | AI/ML에 최적화된 간결하고 강력한 프로그래밍 언어
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]()
-[![Version](https://img.shields.io/badge/version-2.2.8-blue)]()
+[![Version](https://img.shields.io/badge/version-2.3.0-blue)]()
 [![License](https://img.shields.io/badge/license-MIT-green)]()
 [![Language](https://img.shields.io/badge/language-C-orange)]()
 
@@ -17,12 +17,12 @@ FineLang은 **AI/ML 개발**과 **일반 프로그래밍**을 위해 설계된 �
 
 | 항목 | 내용 |
 |------|------|
-| **현재 버전** | v2.2.8 (2025-01-10) |
+| **현재 버전** | v2.3.0 (2025-01-12) |
 | **구현 언어** | C (C99 표준) |
-| **코드 라인** | ~5,700 LOC |
+| **코드 라인** | ~6,200 LOC |
 | **라이센스** | MIT |
 | **주요 용도** | AI/ML, 데이터 과학, 일반 프로그래밍 |
-| **실행 방식** | 인터프리터 (JIT 컴파일러 개발 중) |
+| **실행 방식** | 인터프리터 + **바이트코드 VM** ⚡ |
 
 ---
 
@@ -31,12 +31,68 @@ FineLang은 **AI/ML 개발**과 **일반 프로그래밍**을 위해 설계된 �
 ### 🎯 핵심 기능
 
 - ⚡ **네이티브 성능**: C로 구현되어 빠른 실행 속도
+- 🚀 **바이트코드 VM**: 스택 기반 가상 머신으로 최적화된 실행 (v2.3.0)
+- 🔄 **For 루프**: Python 스타일 `for (item in array)` 구문 지원
 - 🧮 **행렬 연산**: 2D 행렬 타입, 선형대수 연산 (+, -, *, @), 2차원 인덱싱
 - 📦 **모듈 시스템**: import/export, from...import, as 별칭 완벽 지원
 - 🎯 **완전한 OOP**: 클래스, 상속, this/super, 메서드 오버라이딩
 - 🛡️ **예외 처리**: try/catch/finally, 타입별 catch, 스택 추적
 - 🔍 **타입 체크**: is_null(), is_number(), typeof() 등 타입 안전 함수
 - 🔧 **간결한 문법**: Python과 유사하여 배우기 쉬움
+
+### ⚡ 바이트코드 VM (v2.3.0) - NEW!
+
+**스택 기반 가상 머신으로 빠른 실행 속도와 최적화된 메모리 사용**
+
+```finelang
+# VM이 자동으로 바이트코드로 컴파일하여 실행
+let x = 10
+let y = 20
+print(x + y)  # 30
+
+# 제어문도 최적화됨
+if x < y {
+    print("x is smaller")
+}
+
+while x < 15 {
+    print(x)
+    x = x + 1
+}
+```
+
+**바이트코드 VM 특징:**
+- 📦 40+ OpCode로 구성된 효율적인 명령어 세트
+- 🔧 스택 기반 실행 (256 스택 크기)
+- 🎯 최적화된 점프 명령 (if/while/for)
+- 💾 효율적인 메모리 관리
+- 🚀 인터프리터 대비 성능 향상
+
+### 🔄 For 루프 (v2.3.0) - NEW!
+
+**Python 스타일의 직관적인 반복문**
+
+```finelang
+# 배열 순회
+for (x in [1, 2, 3, 4, 5]) {
+    print(x)
+}
+# 출력: 1 2 3 4 5
+
+# 합계 계산
+let sum = 0
+for (x in [10, 20, 30]) {
+    sum = sum + x
+}
+print(sum)  # 60
+
+# 행렬의 각 행 처리
+let matrix = [[1, 2], [3, 4], [5, 6]]
+for (row in matrix) {
+    print(row)
+}
+# 출력: [1, 2] [3, 4] [5, 6]
+```
 
 ### 🧮 풍부한 연산자 (v2.2.4)
 
@@ -257,11 +313,32 @@ sudo make install
 print("Hello, FineLang! 🚀")
 ```
 
-**실행:**
+**실행 (인터프리터 모드):**
 ```bash
 ./finelang hello.fine
 # 출력: Hello, FineLang! 🚀
 ```
+
+**실행 (VM 모드):**
+```bash
+./finelang --vm hello.fine
+# 또는
+./finelang -v hello.fine
+
+# 출력:
+# === Bytecode Disassembly ===
+# ... (바이트코드 디버그 정보) ...
+# === Execution ===
+# Hello, FineLang! 🚀
+```
+
+### 실행 모드 비교
+
+| 모드 | 명령어 | 용도 | 특징 |
+|------|--------|------|------|
+| **인터프리터** | `./finelang file.fine` | 일반 실행 | 빠른 시작, 직접 실행 |
+| **VM** | `./finelang --vm file.fine` | 디버깅, 최적화 확인 | 바이트코드 출력, 성능 분석 |
+| **REPL** | `./finelang` | 대화형 테스트 | 즉시 코드 테스트 |
 
 ### REPL 모드 사용
 
@@ -315,17 +392,24 @@ finelang/
 │   ├── lexer.c/h          # 어휘 분석기 (토큰화)
 │   ├── parser.c/h         # 구문 분석기 (AST 생성)
 │   ├── interpreter.c/h    # 인터프리터 (실행 엔진)
+│   ├── bytecode.c/h       # 바이트코드 시스템 (v2.3.0)
+│   ├── compiler.c/h       # AST → 바이트코드 컴파일러 (v2.3.0)
+│   ├── vm.c/h             # 가상 머신 (v2.3.0)
 │   ├── module.c/h         # 모듈 시스템
-│   └── main.c             # 진입점
+│   ├── main.c             # 진입점
+│   └── vm_test.c          # VM 테스트 도구
 ├── stdlib/                 # 표준 라이브러리
 │   ├── math.fine          # 수학 함수 (abs, max, min, PI 등)
 │   └── string.fine        # 문자열 함수
 ├── examples/               # 예제 코드
+│   ├── test_vm_*.fine     # VM 테스트 파일
+│   └── ...
 ├── build/                  # 빌드 출력
 ├── Makefile               # 빌드 설정
 ├── README.md              # 이 문서
 ├── SYNTAX_GUIDE.md        # 문법 가이드
-└── CHANGELOG.md           # 변경 이력
+├── CHANGELOG.md           # 변경 이력
+└── VM_COMPLETE.md         # VM 구현 문서 (v2.3.0)
 ```
 
 ---
@@ -420,6 +504,10 @@ print("Y[0][0] =", Y[0][0])
 
 | 버전 | 날짜 | 주요 기능 |
 |------|------|----------|
+| **v2.3.0** | 2025-01-12 | ⚡ 바이트코드 VM + For 루프 |
+| **v2.2.8** | 2025-01-10 | ✅ Boolean 타입 (true/false) |
+| **v2.2.6** | 2025-01-10 | 🔧 유틸리티 함수 (contains, min, max 등) |
+| **v2.2.5** | 2025-01-10 | 🔍 Null 타입 + 타입 체크 함수 |
 | **v2.2.4** | 2025-01-09 | ➗ 나머지(%), 몫(//) 연산자 |
 | **v2.2.3** | 2025-01-09 | 🏷️ 모듈 별칭 (import as) |
 | **v2.2.2** | 2025-01-09 | 📦 from...import 구문 |
@@ -477,17 +565,23 @@ sudo make uninstall
 
 ## 🗺️ 로드맵
 
-### v2.3.0 - 행렬 유틸리티 (예정)
+### v2.4.0 - 행렬 유틸리티 (예정)
 - [ ] shape() - 행렬 크기
 - [ ] transpose() - 전치
 - [ ] dot() - 내적
 - [ ] eye() - 단위 행렬
 - [ ] zeros(), ones() - 특수 행렬
 
-### v3.0.0 - JIT 컴파일러 (계획 중)
+### v2.5.0 - VM 최적화 (계획 중)
+- [ ] 함수 정의/호출 지원
+- [ ] 클래스 시스템 통합
+- [ ] 최적화 패스
+- [ ] 성능 벤치마크
+
+### v3.0.0 - JIT 컴파일러 (장기 계획)
 - [ ] LLVM 기반 JIT 컴파일
-- [ ] 성능 최적화
 - [ ] 타입 추론
+- [ ] 고급 최적화
 
 ### 향후 계획
 - [ ] GPU 가속 지원

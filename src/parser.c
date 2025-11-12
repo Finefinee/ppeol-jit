@@ -178,12 +178,21 @@ ASTNode* parser_parse_for(Parser* parser) {
     
     parser_advance(parser); // 'for' 건너뛰기
     
+    if (parser->current_token->type == TOKEN_LPAREN) {
+        parser_advance(parser); // '(' 건너뛰기
+    }
+    
     char* iterator = strdup(parser->current_token->value);
     parser_advance(parser);
     
     parser_advance(parser); // 'in' 건너뛰기
     
     ASTNode* iterable = parser_parse_expression(parser);
+    
+    if (parser->current_token->type == TOKEN_RPAREN) {
+        parser_advance(parser); // ')' 건너뛰기
+    }
+    
     ASTNode* body = parser_parse_block(parser);
     
     ASTNode* node = (ASTNode*)malloc(sizeof(ASTNode));
