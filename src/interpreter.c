@@ -50,6 +50,9 @@ Value* interpreter_eval(Interpreter* interp, ASTNode* node) {
         case AST_NUMBER:
             return value_create_number(node->data.number);
             
+        case AST_BOOL:
+            return value_create_bool(node->data.boolean);
+            
         case AST_STRING:
             return value_create_string(node->data.string);
             
@@ -116,7 +119,12 @@ Value* interpreter_eval(Interpreter* interp, ASTNode* node) {
             
         case AST_IF: {
             Value* cond = interpreter_eval(interp, node->data.if_stmt.condition);
-            int is_true = (cond->type == VAL_NUMBER && cond->data.number != 0);
+            int is_true = 0;
+            if (cond->type == VAL_BOOL) {
+                is_true = cond->data.boolean;
+            } else if (cond->type == VAL_NUMBER) {
+                is_true = (cond->data.number != 0);
+            }
             value_free(cond);
             
             if (is_true) {
@@ -150,7 +158,12 @@ Value* interpreter_eval(Interpreter* interp, ASTNode* node) {
         case AST_WHILE: {
             while (1) {
                 Value* cond = interpreter_eval(interp, node->data.while_loop.condition);
-                int is_true = (cond->type == VAL_NUMBER && cond->data.number != 0);
+                int is_true = 0;
+                if (cond->type == VAL_BOOL) {
+                    is_true = cond->data.boolean;
+                } else if (cond->type == VAL_NUMBER) {
+                    is_true = (cond->data.number != 0);
+                }
                 value_free(cond);
                 
                 if (!is_true) break;
@@ -995,12 +1008,12 @@ Value* interpreter_eval_binary(Interpreter* interp, ASTNode* node) {
             }
             result = value_create_number(floor(l / r));
         }
-        else if (strcmp(op, "==") == 0) result = value_create_number(l == r ? 1 : 0);
-        else if (strcmp(op, "!=") == 0) result = value_create_number(l != r ? 1 : 0);
-        else if (strcmp(op, "<") == 0) result = value_create_number(l < r ? 1 : 0);
-        else if (strcmp(op, "<=") == 0) result = value_create_number(l <= r ? 1 : 0);
-        else if (strcmp(op, ">") == 0) result = value_create_number(l > r ? 1 : 0);
-        else if (strcmp(op, ">=") == 0) result = value_create_number(l >= r ? 1 : 0);
+        else if (strcmp(op, "==") == 0) result = value_create_bool(l == r);
+        else if (strcmp(op, "!=") == 0) result = value_create_bool(l != r);
+        else if (strcmp(op, "<") == 0) result = value_create_bool(l < r);
+        else if (strcmp(op, "<=") == 0) result = value_create_bool(l <= r);
+        else if (strcmp(op, ">") == 0) result = value_create_bool(l > r);
+        else if (strcmp(op, ">=") == 0) result = value_create_bool(l >= r);
     } else if (left->type == VAL_STRING && right->type == VAL_STRING) {
         // 문자열 + 문자열 = 연결
         if (strcmp(op, "+") == 0) {
@@ -1013,10 +1026,10 @@ Value* interpreter_eval_binary(Interpreter* interp, ASTNode* node) {
         }
         // 문자열 비교
         else if (strcmp(op, "==") == 0) {
-            result = value_create_number(strcmp(left->data.string, right->data.string) == 0 ? 1 : 0);
+            result = value_create_bool(strcmp(left->data.string, right->data.string) == 0);
         }
         else if (strcmp(op, "!=") == 0) {
-            result = value_create_number(strcmp(left->data.string, right->data.string) != 0 ? 1 : 0);
+            result = value_create_bool(strcmp(left->data.string, right->data.string) != 0);
         }
     } else if (left->type == VAL_STRING && right->type == VAL_NUMBER) {
         // 문자열 * 숫자 = 반복
@@ -1051,6 +1064,14 @@ Value* interpreter_eval_binary(Interpreter* interp, ASTNode* node) {
             
             result = value_create_string(repeated);
             free(repeated);
+        }
+    } else if (left->type == VAL_BOOL && right->type == VAL_BOOL) {
+        // Boolean 비교
+        if (strcmp(op, "==") == 0) {
+            result = value_create_bool(left->data.boolean == right->data.boolean);
+        }
+        else if (strcmp(op, "!=") == 0) {
+            result = value_create_bool(left->data.boolean != right->data.boolean);
         }
     } else if (left->type == VAL_ARRAY && right->type == VAL_ARRAY) {
         // 벡터 연산
@@ -1309,13 +1330,11 @@ Value* interpreter_eval_function_call(Interpreter* interp, ASTNode* node) {
     if (strcmp(name, "is_bool") == 0) {
         if (node->data.function_call.arg_count > 0) {
             Value* arg = interpreter_eval(interp, node->data.function_call.args[0]);
-            // FineLang에서 boolean은 숫자로 표현 (0 또는 1)
-            int result = (arg->type == VAL_NUMBER && 
-                         (arg->data.number == 0.0 || arg->data.number == 1.0));
+            int result = (arg->type == VAL_BOOL);
             value_free(arg);
-            return value_create_number(result);
+            return value_create_bool(result);
         }
-        return value_create_number(0);
+        return value_create_bool(0);
     }
     
     if (strcmp(name, "is_array") == 0) {
@@ -1356,6 +1375,7 @@ Value* interpreter_eval_function_call(Interpreter* interp, ASTNode* node) {
             switch (arg->type) {
                 case VAL_NULL:      type_name = "null"; break;
                 case VAL_NUMBER:    type_name = "number"; break;
+                case VAL_BOOL:      type_name = "bool"; break;
                 case VAL_STRING:    type_name = "string"; break;
                 case VAL_ARRAY:     type_name = "array"; break;
                 case VAL_DICT:      type_name = "dict"; break;
@@ -1650,6 +1670,13 @@ Value* value_create_number(double num) {
     return val;
 }
 
+Value* value_create_bool(int boolean) {
+    Value* val = (Value*)malloc(sizeof(Value));
+    val->type = VAL_BOOL;
+    val->data.boolean = boolean ? 1 : 0;
+    return val;
+}
+
 Value* value_create_string(char* str) {
     Value* val = (Value*)malloc(sizeof(Value));
     val->type = VAL_STRING;
@@ -1720,6 +1747,8 @@ Value* value_copy(Value* val) {
     switch (val->type) {
         case VAL_NUMBER:
             return value_create_number(val->data.number);
+        case VAL_BOOL:
+            return value_create_bool(val->data.boolean);
         case VAL_STRING:
             return value_create_string(val->data.string);
         case VAL_ARRAY: {
@@ -1776,6 +1805,11 @@ void value_free(Value* val) {
     if (!val) return;
     
     switch (val->type) {
+        case VAL_NUMBER:
+        case VAL_BOOL:
+        case VAL_NULL:
+            // 기본 타입은 해제할 것이 없음
+            break;
         case VAL_STRING:
             free(val->data.string);
             break;
@@ -1858,6 +1892,9 @@ void value_print(Value* val) {
             } else {
                 printf("%g", val->data.number);
             }
+            break;
+        case VAL_BOOL:
+            printf("%s", val->data.boolean ? "true" : "false");
             break;
         case VAL_STRING:
             printf("%s", val->data.string);

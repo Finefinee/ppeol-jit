@@ -851,6 +851,22 @@ ASTNode* parser_parse_primary(Parser* parser) {
         return node;
     }
     
+    if (parser->current_token->type == TOKEN_TRUE) {
+        int line = parser->current_token->line;
+        parser_advance(parser);
+        ASTNode* node = ast_create_bool(1);
+        node->line = line;
+        return node;
+    }
+    
+    if (parser->current_token->type == TOKEN_FALSE) {
+        int line = parser->current_token->line;
+        parser_advance(parser);
+        ASTNode* node = ast_create_bool(0);
+        node->line = line;
+        return node;
+    }
+    
     if (parser->current_token->type == TOKEN_STRING) {
         char* value = strdup(parser->current_token->value);
         int line = parser->current_token->line;
@@ -1009,6 +1025,14 @@ ASTNode* ast_create_number(double value) {
     ASTNode* node = (ASTNode*)malloc(sizeof(ASTNode));
     node->type = AST_NUMBER;
     node->data.number = value;
+    node->line = 0;  // 호출하는 곳에서 설정
+    return node;
+}
+
+ASTNode* ast_create_bool(int value) {
+    ASTNode* node = (ASTNode*)malloc(sizeof(ASTNode));
+    node->type = AST_BOOL;
+    node->data.boolean = value ? 1 : 0;
     node->line = 0;  // 호출하는 곳에서 설정
     return node;
 }

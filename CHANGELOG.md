@@ -1,5 +1,122 @@
 # FineLang 변경 이력
 
+## v2.2.8 (2025-01-10) - Boolean 타입 ✅
+
+### 새로운 기능
+
+#### Boolean 리터럴 (Python 스타일)
+
+- ✨ **`true` 키워드**: Boolean 참 값 (1로 평가)
+  ```finelang
+  let is_ready = true
+  print(true)              # 1
+  print(true == 1)         # 1
+  ```
+
+- ✨ **`false` 키워드**: Boolean 거짓 값 (0으로 평가)
+  ```finelang
+  let is_error = false
+  print(false)             # 0
+  print(false == 0)        # 1
+  ```
+
+- ✨ **조건문에서 직접 사용**
+  ```finelang
+  if true {
+      print("항상 실행됨")
+  }
+  
+  let is_enabled = true
+  if is_enabled {
+      print("활성화됨")
+  }
+  ```
+
+- ✨ **함수 반환값으로 사용**
+  ```finelang
+  fn is_positive(x) {
+      if x > 0 {
+          return true
+      } else {
+          return false
+      }
+  }
+  
+  print(is_positive(5))    # 1 (true)
+  print(is_positive(-3))   # 0 (false)
+  ```
+
+### 실용 예제
+
+```finelang
+# 설정 플래그
+let debug_mode = false
+let production_mode = true
+
+if production_mode {
+    print("운영 환경에서 실행 중")
+}
+
+# 검증 함수
+fn is_valid_age(age) {
+    if age >= 0 {
+        if age <= 150 {
+            return true
+        }
+    }
+    return false
+}
+
+print(is_valid_age(25))    # 1 (true)
+print(is_valid_age(-5))    # 0 (false)
+print(is_valid_age(200))   # 0 (false)
+
+# 상태 체크
+fn check_system() {
+    let network_ok = true
+    let disk_ok = true
+    
+    if network_ok {
+        if disk_ok {
+            return true
+        }
+    }
+    return false
+}
+```
+
+### 구현 세부사항
+
+- **렉서 (Lexer)**:
+  - `TOKEN_TRUE`, `TOKEN_FALSE` 토큰 타입 추가
+  - 키워드 인식: `strcmp(value, "true")`, `strcmp(value, "false")`
+
+- **파서 (Parser)**:
+  - `TOKEN_TRUE` → `AST_NUMBER(1.0)` 변환
+  - `TOKEN_FALSE` → `AST_NUMBER(0.0)` 변환
+  - Primary expression 파싱에서 처리
+
+- **의미론**:
+  - `true`는 항상 숫자 1로 평가
+  - `false`는 항상 숫자 0으로 평가
+  - 기존 숫자 기반 조건문과 완벽 호환
+
+### 테스트
+
+- ✅ `test_boolean.fine`: Boolean 리터럴 기본 동작
+- ✅ 비교 연산: `true == 1`, `false == 0`
+- ✅ 조건문: `if true`, `if false`
+- ✅ 함수 반환값
+- ✅ 변수 할당
+
+### 호환성
+
+- Python 스타일 Boolean 리터럴
+- 기존 숫자 기반 조건문과 100% 호환
+- 하위 호환성 유지 (0/1 여전히 사용 가능)
+
+---
+
 ## v2.2.7 (2025-01-10) - 문자열 연산 🔤
 
 ### 새로운 기능

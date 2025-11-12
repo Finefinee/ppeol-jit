@@ -12,6 +12,7 @@ struct ModuleCache;
 typedef enum {
     VAL_NUMBER,
     VAL_STRING,
+    VAL_BOOL,
     VAL_ARRAY,
     VAL_DICT,
     VAL_FUNCTION,
@@ -29,6 +30,7 @@ typedef struct Value {
     union {
         double number;
         char* string;
+        int boolean;  // 0 = false, 1 = true
         struct {
             struct Value** elements;
             int count;
@@ -121,6 +123,7 @@ void environment_free(Environment* env);
 void environment_set(Environment* env, char* name, Value* value);
 Value* environment_get(Environment* env, char* name);
 Value* value_create_number(double num);
+Value* value_create_bool(int boolean);
 Value* value_create_string(char* str);
 Value* value_create_array(Value** elements, int count);
 Value* value_create_dict(char** keys, Value** values, int count);

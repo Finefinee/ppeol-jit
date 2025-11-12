@@ -142,6 +142,8 @@ Token* lexer_read_identifier(Lexer* lexer) {
     else if (strcmp(value, "import") == 0) type = TOKEN_IMPORT;
     else if (strcmp(value, "export") == 0) type = TOKEN_EXPORT;
     else if (strcmp(value, "from") == 0) type = TOKEN_FROM;
+    else if (strcmp(value, "true") == 0) type = TOKEN_TRUE;
+    else if (strcmp(value, "false") == 0) type = TOKEN_FALSE;
     
     Token* token = token_create(type, value, lexer->line, start_column);
     free(value);
@@ -318,6 +320,8 @@ const char* token_type_to_string(TokenType type) {
         case TOKEN_IMPORT: return "IMPORT";
         case TOKEN_EXPORT: return "EXPORT";
         case TOKEN_FROM: return "FROM";
+        case TOKEN_TRUE: return "TRUE";
+        case TOKEN_FALSE: return "FALSE";
         case TOKEN_NEWLINE: return "NEWLINE";
         case TOKEN_ERROR: return "ERROR";
         default: return "UNKNOWN";

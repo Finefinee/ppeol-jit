@@ -1,9 +1,9 @@
 # FineLang 문법 가이드 📖
 
-> **FineLang v2.2.7** - AI/ML 작업에 최적화된 간결하고 강력한 프로그래밍 언어
+> **FineLang v2.2.8** - AI/ML 작업에 최적화된 간결하고 강력한 프로그래밍 언어
 
 **최종 업데이트**: 2025-01-10  
-**버전**: v2.2.7
+**버전**: v2.2.8
 
 ---
 
@@ -53,6 +53,7 @@ let x = 42  # 인라인 주석도 가능
 let x = 42               # 숫자
 let name = "FineLang"    # 문자열
 let pi = 3.14159         # 실수
+let is_ready = true      # Boolean (v2.2.8)
 let numbers = [1, 2, 3]  # 배열
 let matrix = [[1, 2], [3, 4]]  # 행렬
 ```
@@ -93,7 +94,47 @@ if is_null(value) {
 }
 ```
 
-### 2.2 Number (숫자)
+### 2.2 Boolean (v2.2.8)
+참(true) 또는 거짓(false) 값을 나타냅니다.
+
+```finelang
+let is_ready = true
+let is_error = false
+
+print(true)              # 1
+print(false)             # 0
+print(true == 1)         # 1 (true)
+print(false == 0)        # 1 (true)
+
+# 조건문에서 사용
+if true {
+    print("Always runs")
+}
+
+if is_ready {
+    print("System is ready")
+}
+
+# 함수 반환
+fn is_positive(x) {
+    if x > 0 {
+        return true
+    } else {
+        return false
+    }
+}
+
+print(is_positive(5))    # 1 (true)
+print(is_positive(-3))   # 0 (false)
+```
+
+**특징**:
+- `true`: 숫자 1로 평가
+- `false`: 숫자 0으로 평가
+- 조건문에서 직접 사용 가능
+- Python 스타일 Boolean 리터럴
+
+### 2.3 Number (숫자)
 정수와 실수를 구분 없이 사용합니다.
 
 ```finelang
@@ -1593,6 +1634,7 @@ try {
 | v2.2.5 | 타입 체크 함수 (is_null, typeof 등) |
 | v2.2.6 | 유틸리티 함수 (contains, append, min/max 등) |
 | v2.2.7 | 문자열 연산 (+, *, ==, !=) |
+| v2.2.8 | Boolean 타입 (true, false 키워드) |
 
 ---
 
@@ -1817,4 +1859,4 @@ print("=== Utils 모듈 테스트 ===")
 
 ---
 
-**FineLang v2.2.7** - AI/ML을 위한 간결하고 강력한 언어 🚀
+**FineLang v2.2.8** - AI/ML을 위한 간결하고 강력한 언어 🚀

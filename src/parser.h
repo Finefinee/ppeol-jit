@@ -8,6 +8,7 @@ typedef enum {
     AST_PROGRAM,
     AST_NUMBER,
     AST_STRING,
+    AST_BOOL,
     AST_IDENTIFIER,
     AST_BINARY_OP,
     AST_UNARY_OP,
@@ -44,6 +45,7 @@ typedef struct ASTNode {
     union {
         double number;
         char* string;
+        int boolean;  // 0 = false, 1 = true
         struct {
             char* op;
             struct ASTNode* left;
@@ -203,6 +205,7 @@ ASTNode* parser_parse_dict(Parser* parser);
 ASTNode* parser_parse_class(Parser* parser);
 ASTNode* parser_parse_block(Parser* parser);
 ASTNode* ast_create_number(double value);
+ASTNode* ast_create_bool(int value);
 ASTNode* ast_create_string(char* value);
 ASTNode* ast_create_identifier(char* name);
 ASTNode* ast_create_binary(char* op, ASTNode* left, ASTNode* right);

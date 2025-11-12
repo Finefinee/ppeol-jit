@@ -42,6 +42,8 @@ typedef enum {
     TOKEN_IMPORT,       // import
     TOKEN_EXPORT,       // export
     TOKEN_FROM,         // from (for "import x from module")
+    TOKEN_TRUE,         // true
+    TOKEN_FALSE,        // false
     TOKEN_PLUS,
     TOKEN_MINUS,
     TOKEN_MULTIPLY,
