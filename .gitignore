@@ -1,5 +1,16 @@
 example/
 
+# Build artifacts
+build/
+*.o
+*.out
+finelang
+vm_test
+
+# Test files
+test_*.fine
+run_test.sh
+
 # Logs
 logs
 *.log
