@@ -1,5 +1,180 @@
 # FineLang 변경 이력
 
+## v2.3.2 (2025-11-13) - 배열 동적 확장 🚀
+
+### 핵심 기능
+
+#### 배열 동적 확장 (Dynamic Array Growth)
+- **기능**: 배열 인덱스 할당 시 범위를 벗어나면 자동으로 배열 크기 증가
+- **이전**: `arr[index] = value`에서 index가 범위 밖이면 IndexError 발생
+- **현재**: 자동으로 배열 확장, 빈 공간은 `null`로 초기화
+
+**사용 예제**:
+```finelang
+let arr = []
+print(arr)        # []
+
+arr[0] = 10
+print(arr)        # [10]
+
+arr[5] = 100
+print(arr)        # [10, null, null, null, null, 100]
+
+arr[2] = 30
+print(arr)        # [10, null, 30, null, null, 100]
+```
+
+**활용**:
+- Stack, Queue 등 자료구조 구현 가능
+- 동적 배열이 필요한 모든 알고리즘에 사용 가능
+- Python/JavaScript 스타일의 배열 사용 가능
+
+**구현 세부사항**:
+```c
+// interpreter.c: AST_INDEX_ASSIGN 처리
+if (idx >= array->data.array.count) {
+    int new_count = idx + 1;
+    array->data.array.elements = realloc(array->data.array.elements, 
+                                          sizeof(Value*) * new_count);
+    
+    // 새로 추가된 공간을 null로 초기화
+    for (int i = array->data.array.count; i < new_count; i++) {
+        array->data.array.elements[i] = value_create_null();
+    }
+    
+    array->data.array.count = new_count;
+}
+```
+
+### stdlib 추가
+
+#### stdlib/data_structures.fine - 자료구조 라이브러리
+배열 동적 확장을 활용한 4가지 자료구조 제공:
+
+**1. Stack (스택) - LIFO**
+```finelang
+import data_structures as ds
+
+let stack = []
+stack = ds.stack_push(stack, 10)
+stack = ds.stack_push(stack, 20)
+let result = ds.stack_pop(stack)
+stack = result["stack"]           # 새 스택으로 업데이트
+print(result["value"])            # 20
+print(ds.stack_peek(stack))       # 10
+```
+
+함수: `stack_push`, `stack_pop` (Dictionary 반환), `stack_peek`, `stack_size`, `stack_is_empty`
+
+**2. Queue (큐) - FIFO**
+```finelang
+let queue = []
+queue = ds.queue_enqueue(queue, 10)
+queue = ds.queue_enqueue(queue, 20)
+let result = ds.queue_dequeue(queue)
+queue = result["queue"]           # 새 큐로 업데이트
+print(result["value"])            # 10
+print(ds.queue_peek(queue))       # 20
+```
+
+함수: `queue_enqueue`, `queue_dequeue` (Dictionary 반환), `queue_peek`, `queue_size`, `queue_is_empty`
+
+**3. LinkedList (연결 리스트)**
+```finelang
+let list = ds.list_create()
+list = ds.list_append(list, 10)
+list = ds.list_prepend(list, 5)
+print(ds.list_to_array(list))      # [5, 10]
+let val = ds.list_get(list, 0)     # 5
+
+# remove_at는 Dictionary 반환
+let result = ds.list_remove_at(list, 0)
+list = result["list"]
+print(result["value"])             # 5
+```
+
+함수: `list_create`, `list_append`, `list_prepend`, `list_get`, `list_set`, 
+      `list_remove_at` (Dictionary 반환), `list_find`, `list_to_array`, `list_size`, `list_is_empty`, `list_clear`
+
+**4. Deque (양방향 큐)**
+```finelang
+let deque = ds.deque_create()
+deque = ds.deque_push_back(deque, 10)
+deque = ds.deque_push_front(deque, 5)
+print(ds.deque_to_array(deque))    # [5, 10]
+
+# pop 함수들은 Dictionary 반환
+let result = ds.deque_pop_front(deque)
+deque = result["deque"]
+print(result["value"])             # 5
+
+result = ds.deque_pop_back(deque)
+deque = result["deque"]
+print(result["value"])             # 10
+```
+
+함수: `deque_create`, `deque_push_front`, `deque_push_back`, 
+      `deque_pop_front` (Dictionary 반환), `deque_pop_back` (Dictionary 반환),
+      `deque_peek_front`, `deque_peek_back`, `deque_size`, `deque_is_empty`, `deque_to_array`, `deque_clear`
+
+**참고**: FineLang은 pass-by-value이므로 함수 반환값을 재할당해야 합니다.
+
+**삭제 연산 (pop, dequeue, remove_at)은 Dictionary 반환**:
+```finelang
+# ✅ 올바른 사용법
+let result = ds.stack_pop(stack)
+stack = result["stack"]        # 새 스택
+let value = result["value"]    # 꺼낸 값
+
+# 또는 한 줄로:
+let result = ds.queue_dequeue(queue)
+queue = result["queue"]
+
+# List remove도 동일:
+let result = ds.list_remove_at(list, index)
+list = result["list"]
+print(result["value"])
+```
+
+**추가 연산은 새 배열 반환**:
+```finelang
+stack = ds.stack_push(stack, value)  # ✅
+queue = ds.queue_enqueue(queue, val) # ✅
+list = ds.list_append(list, item)    # ✅
+```
+
+**성능 특성**:
+- Stack: push/pop O(1)
+- Queue: enqueue O(1), dequeue O(n)
+- LinkedList: append O(1), prepend O(n), get/set O(1), remove O(n)
+- Deque: push_back O(1), push_front O(n), pop_back O(1), pop_front O(n)
+
+**구현 방식**:
+- 모두 배열 기반으로 구현 (FineLang의 동적 배열 활용)
+- LinkedList는 교육/참고용 배열 래퍼 (실제 포인터 기반 아님)
+- 간단하고 이해하기 쉬운 구현에 초점
+
+#### data_structures 모듈 (참고용)
+- **Stack**: `stack_push`, `stack_pop`, `stack_peek`, `stack_size`, `stack_is_empty`
+- **Queue**: `queue_enqueue`, `queue_dequeue`, `queue_peek`, `queue_size`, `queue_is_empty`
+- **주의**: FineLang은 pass by value이므로 직접 배열 사용 권장
+
+**직접 배열 사용 (권장)**:
+```finelang
+# Stack (LIFO)
+let stack = []
+stack[len(stack)] = 10    # push
+stack[len(stack)] = 20
+let top = stack[len(stack) - 1]  # peek/pop
+
+# Queue (FIFO) - 단순 버전
+let queue = []
+queue[len(queue)] = "A"   # enqueue
+let first = queue[0]      # peek
+```
+
+---
+
 ## v2.3.1 (2025-11-13) - 버그 수정 및 개선 🐛
 
 ### 중요 버그 수정

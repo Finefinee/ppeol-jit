@@ -1,9 +1,9 @@
 # FineLang 문법 가이드 📖
 
-> **FineLang v2.3.1** - AI/ML 작업에 최적화된 간결하고 강력한 프로그래밍 언어
+> **FineLang v2.3.2** - AI/ML 작업에 최적화된 간결하고 강력한 프로그래밍 언어
 
 **최종 업데이트**: 2025-11-13  
-**버전**: v2.3.1
+**버전**: v2.3.2
 
 ---
 
@@ -35,6 +35,7 @@
     - [선택적 import (from...import)](#102-선택적-import-fromimport)
     - [모듈 별칭 (as)](#106-모듈-별칭-v223)
     - [stdlib/math 모듈](#107-stdlibmath-모듈-v231)
+    - [stdlib/data_structures 모듈](#108-stdlibdata_structures-모듈-v232)
     - [모듈 예제](#109-모듈-예제)
 
 ---
@@ -224,8 +225,72 @@ let last = numbers[4]     # 5
 numbers[0] = 10
 numbers[2] = 999
 print(numbers)  # [10, 2, 999, 4, 5]
+```
 
-# 배열 정렬 구현 (버블 소트)
+#### 동적 배열 확장 (v2.3.2+)
+
+v2.3.2부터는 **배열이 자동으로 확장**됩니다. 범위를 벗어난 인덱스에 값을 할당하면 배열 크기가 자동으로 늘어나고, 빈 공간은 `null`로 초기화됩니다.
+
+```finelang
+# 빈 배열로 시작
+let arr = []
+print(arr)        # []
+
+# 인덱스 0에 값 할당 → 자동 확장
+arr[0] = 10
+print(arr)        # [10]
+
+# 인덱스 5에 값 할당 → 중간이 null로 채워짐
+arr[5] = 100
+print(arr)        # [10, null, null, null, null, 100]
+
+# 중간 값 채우기
+arr[2] = 30
+arr[3] = 40
+print(arr)        # [10, null, 30, 40, null, 100]
+```
+
+**활용 예제: 동적 데이터 수집**
+```finelang
+let scores = []
+
+# 학생 번호(인덱스)에 점수 바로 할당
+scores[0] = 85   # 첫 번째 학생
+scores[5] = 92   # 여섯 번째 학생
+scores[2] = 78   # 세 번째 학생
+
+print(scores)    # [85, null, 78, null, null, 92]
+
+# null 체크하며 평균 계산
+let sum = 0
+let count = 0
+let i = 0
+
+while i < len(scores) {
+    if is_null(scores[i]) == false {
+        sum = sum + scores[i]
+        count = count + 1
+    }
+    i = i + 1
+}
+
+print("평균:", sum / count)  # 평균: 85
+```
+
+**이전 버전과의 차이**:
+```finelang
+# v2.3.1 이하: IndexError 발생
+let arr = [1, 2, 3]
+arr[5] = 100      # 에러! Index out of range
+
+# v2.3.2 이상: 자동 확장
+let arr = [1, 2, 3]
+arr[5] = 100      # OK! 배열이 자동으로 늘어남
+print(arr)        # [1, 2, 3, null, null, 100]
+```
+
+**배열 정렬 구현 (버블 소트)**:
+```finelang
 let arr = [3, 7, 2, 9, 1, 5]
 let i = 0
 while i < len(arr) - 1 {
@@ -1771,10 +1836,28 @@ import math
 # - min(a, b): 최솟값
 # - pow(base, exp): 거듭제곱
 # - factorial(n): 팩토리얼
+# - sum(arr): 배열 합계 (v2.3.1)
+# - mean(arr): 평균 (v2.3.1)
+# - median(arr): 중앙값 (v2.3.1)
 #
 # 제공되는 상수:
 # - PI: 3.14159265359
 # - E: 2.71828182846
+```
+
+#### stdlib/data_structures.fine (v2.3.2+)
+
+```finelang
+import data_structures as ds
+
+# 4가지 자료구조 제공:
+# - Stack (스택, LIFO)
+# - Queue (큐, FIFO)
+# - LinkedList (연결 리스트)
+# - Deque (양방향 큐)
+#
+# 모든 삭제 연산은 Dictionary 반환:
+# - {"value": 값, "stack": 새_배열}
 ```
 
 #### stdlib/string.fine
@@ -1997,7 +2080,321 @@ print("sin(45°) =", sin(angle))
 print("cos(45°) =", cos(angle))
 ```
 
-### 10.8 v2.0의 제한사항
+### 10.8 stdlib/data_structures 모듈 (v2.3.2+)
+
+FineLang v2.3.2부터는 배열 동적 확장 기능을 활용한 자료구조 라이브러리를 제공합니다. Stack, Queue, LinkedList, Deque 등 4가지 기본 자료구조를 사용할 수 있습니다.
+
+#### 10.8.1 Stack (스택) - LIFO
+
+후입선출(Last-In-First-Out) 자료구조입니다.
+
+```finelang
+import data_structures as ds
+
+# Stack 생성 (빈 배열)
+let stack = []
+
+# push: 값 추가
+stack = ds.stack_push(stack, 10)
+stack = ds.stack_push(stack, 20)
+stack = ds.stack_push(stack, 30)
+print(stack)  # [10, 20, 30]
+
+# peek: 맨 위 값 확인 (제거 안함)
+print(ds.stack_peek(stack))  # 30
+
+# pop: 값 제거 및 반환 (Dictionary 반환!)
+let result = ds.stack_pop(stack)
+stack = result["stack"]      # 새 스택으로 업데이트
+let value = result["value"]  # 꺼낸 값
+print(value)                 # 30
+print(stack)                 # [10, 20]
+
+# 크기 확인
+print(ds.stack_size(stack))  # 2
+
+# 비어있는지 확인
+print(ds.stack_is_empty(stack))  # false
+```
+
+**Stack 함수 목록**:
+- `stack_push(stack, value)`: 값 추가, 새 스택 반환
+- `stack_pop(stack)`: 값 제거, `{"value": val, "stack": new_stack}` 반환
+- `stack_peek(stack)`: 맨 위 값 확인
+- `stack_size(stack)`: 크기 반환
+- `stack_is_empty(stack)`: 비어있으면 true
+
+**실용 예제: 괄호 검사**
+```finelang
+import data_structures as ds
+
+fn check_brackets(s) {
+    let stack = []
+    let i = 0
+    
+    while i < len(s) {
+        let char = s[i]
+        
+        if char == "(" {
+            stack = ds.stack_push(stack, char)
+        }
+        
+        if char == ")" {
+            if ds.stack_is_empty(stack) {
+                return false
+            }
+            let r = ds.stack_pop(stack)
+            stack = r["stack"]
+        }
+        
+        i = i + 1
+    }
+    
+    return ds.stack_is_empty(stack)
+}
+
+print(check_brackets("(())"))   # true
+print(check_brackets("(()"))    # false
+```
+
+#### 10.8.2 Queue (큐) - FIFO
+
+선입선출(First-In-First-Out) 자료구조입니다.
+
+```finelang
+import data_structures as ds
+
+# Queue 생성
+let queue = []
+
+# enqueue: 값 추가
+queue = ds.queue_enqueue(queue, 10)
+queue = ds.queue_enqueue(queue, 20)
+queue = ds.queue_enqueue(queue, 30)
+print(queue)  # [10, 20, 30]
+
+# peek: 맨 앞 값 확인
+print(ds.queue_peek(queue))  # 10
+
+# dequeue: 값 제거 및 반환 (Dictionary 반환!)
+let result = ds.queue_dequeue(queue)
+queue = result["queue"]      # 새 큐로 업데이트
+let value = result["value"]  # 꺼낸 값
+print(value)                 # 10
+print(queue)                 # [20, 30]
+
+# 크기 및 빈 체크
+print(ds.queue_size(queue))       # 2
+print(ds.queue_is_empty(queue))   # false
+```
+
+**Queue 함수 목록**:
+- `queue_enqueue(queue, value)`: 값 추가, 새 큐 반환
+- `queue_dequeue(queue)`: 값 제거, `{"value": val, "queue": new_queue}` 반환
+- `queue_peek(queue)`: 맨 앞 값 확인
+- `queue_size(queue)`: 크기 반환
+- `queue_is_empty(queue)`: 비어있으면 true
+
+**실용 예제: 작업 대기열**
+```finelang
+import data_structures as ds
+
+# 작업 대기열
+let job_queue = []
+
+# 작업 추가
+job_queue = ds.queue_enqueue(job_queue, "Task 1")
+job_queue = ds.queue_enqueue(job_queue, "Task 2")
+job_queue = ds.queue_enqueue(job_queue, "Task 3")
+
+# 작업 처리
+while ds.queue_is_empty(job_queue) == false {
+    let result = ds.queue_dequeue(job_queue)
+    job_queue = result["queue"]
+    print("처리 중:", result["value"])
+}
+```
+
+#### 10.8.3 LinkedList (연결 리스트)
+
+순차적 접근이 필요한 데이터를 저장하는 자료구조입니다.
+
+```finelang
+import data_structures as ds
+
+# LinkedList 생성
+let list = ds.list_create()
+
+# append: 끝에 추가
+list = ds.list_append(list, 10)
+list = ds.list_append(list, 20)
+list = ds.list_append(list, 30)
+
+# prepend: 앞에 추가
+list = ds.list_prepend(list, 5)
+
+# 배열로 변환하여 확인
+print(ds.list_to_array(list))  # [5, 10, 20, 30]
+
+# get: 인덱스로 값 가져오기
+print(ds.list_get(list, 0))    # 5
+print(ds.list_get(list, 2))    # 20
+
+# set: 인덱스 값 설정
+list = ds.list_set(list, 1, 15)
+print(ds.list_to_array(list))  # [5, 15, 20, 30]
+
+# find: 값 찾기 (인덱스 반환)
+let index = ds.list_find(list, 20)
+print(index)  # 2
+
+# remove_at: 인덱스 삭제 (Dictionary 반환!)
+let result = ds.list_remove_at(list, 1)
+list = result["list"]
+print(result["value"])         # 15
+print(ds.list_to_array(list))  # [5, 20, 30]
+
+# 크기 및 빈 체크
+print(ds.list_size(list))       # 3
+print(ds.list_is_empty(list))   # false
+
+# 전체 삭제
+list = ds.list_clear(list)
+print(ds.list_is_empty(list))   # true
+```
+
+**LinkedList 함수 목록**:
+- `list_create()`: 빈 리스트 생성
+- `list_append(list, value)`: 끝에 추가
+- `list_prepend(list, value)`: 앞에 추가
+- `list_get(list, index)`: 인덱스 값 가져오기
+- `list_set(list, index, value)`: 인덱스 값 설정
+- `list_remove_at(list, index)`: 인덱스 삭제, `{"value": val, "list": new_list}` 반환
+- `list_find(list, value)`: 값 찾기, 인덱스 반환 (없으면 -1)
+- `list_to_array(list)`: 배열로 변환
+- `list_size(list)`: 크기 반환
+- `list_is_empty(list)`: 비어있으면 true
+- `list_clear(list)`: 전체 삭제
+
+#### 10.8.4 Deque (양방향 큐)
+
+양쪽 끝에서 추가/제거가 가능한 자료구조입니다.
+
+```finelang
+import data_structures as ds
+
+# Deque 생성
+let deque = ds.deque_create()
+
+# 뒤에 추가
+deque = ds.deque_push_back(deque, 10)
+deque = ds.deque_push_back(deque, 20)
+
+# 앞에 추가
+deque = ds.deque_push_front(deque, 5)
+deque = ds.deque_push_front(deque, 1)
+
+print(ds.deque_to_array(deque))  # [1, 5, 10, 20]
+
+# peek: 양쪽 끝 확인
+print(ds.deque_peek_front(deque))  # 1
+print(ds.deque_peek_back(deque))   # 20
+
+# pop_front: 앞에서 제거 (Dictionary 반환!)
+let result = ds.deque_pop_front(deque)
+deque = result["deque"]
+print(result["value"])             # 1
+print(ds.deque_to_array(deque))    # [5, 10, 20]
+
+# pop_back: 뒤에서 제거 (Dictionary 반환!)
+result = ds.deque_pop_back(deque)
+deque = result["deque"]
+print(result["value"])             # 20
+print(ds.deque_to_array(deque))    # [5, 10]
+
+# 크기 및 빈 체크
+print(ds.deque_size(deque))        # 2
+print(ds.deque_is_empty(deque))    # false
+```
+
+**Deque 함수 목록**:
+- `deque_create()`: 빈 deque 생성
+- `deque_push_front(deque, value)`: 앞에 추가
+- `deque_push_back(deque, value)`: 뒤에 추가
+- `deque_pop_front(deque)`: 앞에서 제거, `{"value": val, "deque": new_deque}` 반환
+- `deque_pop_back(deque)`: 뒤에서 제거, `{"value": val, "deque": new_deque}` 반환
+- `deque_peek_front(deque)`: 맨 앞 값 확인
+- `deque_peek_back(deque)`: 맨 뒤 값 확인
+- `deque_size(deque)`: 크기 반환
+- `deque_is_empty(deque)`: 비어있으면 true
+- `deque_to_array(deque)`: 배열로 변환
+- `deque_clear(deque)`: 전체 삭제
+
+**실용 예제: 최근 N개 항목 유지**
+```finelang
+import data_structures as ds
+
+# 최근 5개 항목만 유지하는 슬라이딩 윈도우
+let recent = ds.deque_create()
+let max_size = 5
+
+let items = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+let i = 0
+
+while i < len(items) {
+    recent = ds.deque_push_back(recent, items[i])
+    
+    # 크기 초과시 앞에서 제거
+    if ds.deque_size(recent) > max_size {
+        let result = ds.deque_pop_front(recent)
+        recent = result["deque"]
+    }
+    
+    i = i + 1
+}
+
+print(ds.deque_to_array(recent))  # [6, 7, 8, 9, 10]
+```
+
+#### 10.8.5 중요 사항: Dictionary 반환
+
+**삭제 연산**(`pop`, `dequeue`, `remove_at`)은 모두 **Dictionary를 반환**합니다:
+
+```finelang
+import data_structures as ds
+
+# ✅ 올바른 사용법
+let result = ds.stack_pop(stack)
+stack = result["stack"]        # 새 스택으로 업데이트 필수!
+let value = result["value"]    # 꺼낸 값
+
+# ❌ 잘못된 사용법 (원본이 변경되지 않음)
+let value = ds.stack_pop(stack)  # Dictionary가 반환됨
+# stack은 여전히 이전 상태!
+```
+
+**추가 연산**은 새 배열을 직접 반환:
+
+```finelang
+# ✅ 올바른 사용법
+stack = ds.stack_push(stack, value)
+queue = ds.queue_enqueue(queue, value)
+list = ds.list_append(list, value)
+deque = ds.deque_push_back(deque, value)
+```
+
+#### 10.8.6 성능 특성
+
+| 자료구조 | 추가 | 제거 | 접근 | 특징 |
+|---------|------|------|------|------|
+| Stack | O(1) push_back | O(1) pop_back | O(1) peek | LIFO, 간단 |
+| Queue | O(1) enqueue | O(n) dequeue | O(1) peek | FIFO, shift 비용 |
+| LinkedList | O(1) append<br>O(n) prepend | O(n) remove | O(1) get/set | 배열 기반 래퍼 |
+| Deque | O(1) push_back<br>O(n) push_front | O(1) pop_back<br>O(n) pop_front | O(1) peek | 양방향 |
+
+**참고**: 모든 자료구조가 배열 기반으로 구현되어 있어, FineLang의 동적 배열 확장 기능을 활용합니다.
+
+### 10.9 v2.0의 제한사항
 
 ### 10.9 모듈 예제
 

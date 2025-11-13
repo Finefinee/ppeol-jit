@@ -1,9 +1,9 @@
 # FineLang 🚀
 
-> **현재 버전: v2.3.1** | AI/ML에 최적화된 간결하고 강력한 프로그래밍 언어
+> **현재 버전: v2.3.2** | AI/ML에 최적화된 간결하고 강력한 프로그래밍 언어
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]()
-[![Version](https://img.shields.io/badge/version-2.3.1-blue)]()
+[![Version](https://img.shields.io/badge/version-2.3.2-blue)]()
 [![License](https://img.shields.io/badge/license-MIT-green)]()
 [![Language](https://img.shields.io/badge/language-C-orange)]()
 
@@ -17,7 +17,7 @@ FineLang은 **AI/ML 개발**과 **일반 프로그래밍**을 위해 설계된 �
 
 | 항목 | 내용 |
 |------|------|
-| **현재 버전** | v2.3.1 (2025-11-13) |
+| **현재 버전** | v2.3.2 (2025-11-13) |
 | **구현 언어** | C (C99 표준) |
 | **코드 라인** | ~6,500 LOC |
 | **라이센스** | MIT |
@@ -336,6 +336,55 @@ fn safe_divide(a, b) {
 }
 ```
 
+### 📦 자료구조 라이브러리 (v2.3.2)
+
+```finelang
+import data_structures as ds
+
+# Stack (스택) - LIFO
+let stack = []
+stack = ds.stack_push(stack, 10)
+stack = ds.stack_push(stack, 20)
+let result = ds.stack_pop(stack)
+stack = result["stack"]
+print(result["value"])        # 20
+
+# Queue (큐) - FIFO
+let queue = []
+queue = ds.queue_enqueue(queue, 10)
+queue = ds.queue_enqueue(queue, 20)
+result = ds.queue_dequeue(queue)
+queue = result["queue"]
+print(result["value"])        # 10
+
+# LinkedList (연결 리스트)
+let list = ds.list_create()
+list = ds.list_append(list, 10)
+list = ds.list_prepend(list, 5)
+print(ds.list_to_array(list))   # [5, 10]
+
+# Deque (양방향 큐)
+let deque = ds.deque_create()
+deque = ds.deque_push_back(deque, 10)
+deque = ds.deque_push_front(deque, 5)
+result = ds.deque_pop_front(deque)
+deque = result["deque"]
+print(result["value"])        # 5
+```
+
+**주요 함수**:
+- Stack: `stack_push`, `stack_pop` (Dict 반환), `stack_peek`, `stack_size`
+- Queue: `queue_enqueue`, `queue_dequeue` (Dict 반환), `queue_peek`, `queue_size`
+- LinkedList: `list_append`, `list_prepend`, `list_get`, `list_set`, `list_remove_at` (Dict 반환)
+- Deque: `deque_push_front/back`, `deque_pop_front/back` (Dict 반환), `deque_peek_front/back`
+
+**삭제 연산 사용법** (Dictionary 반환):
+```finelang
+let result = ds.stack_pop(stack)
+stack = result["stack"]        # 새 스택으로 업데이트
+let value = result["value"]    # 꺼낸 값
+```
+
 ---
 
 ## ⚡ 빠른 시작
@@ -427,7 +476,8 @@ examples/
 ├── matrix_basic.fine       # 행렬 기초
 ├── matrix_operations.fine  # 행렬 연산
 ├── module_alias.fine       # 모듈 별칭
-└── modulo_floordiv.fine   # 나머지/몫 연산
+├── modulo_floordiv.fine   # 나머지/몫 연산
+└── test_data_structures.fine  # 자료구조 라이브러리 사용 예제 (v2.3.2)
 ```
 
 ---
@@ -447,7 +497,8 @@ finelang/
 │   └── main.c             # 통합 진입점 (인터프리터 + VM)
 ├── stdlib/                 # 표준 라이브러리
 │   ├── math.fine          # 수학 함수 (abs, max, min, PI 등)
-│   └── string.fine        # 문자열 함수
+│   ├── string.fine        # 문자열 함수
+│   └── data_structures.fine  # 자료구조 (Stack, Queue, LinkedList, Deque) v2.3.2
 ├── examples/               # 예제 코드
 │   ├── test_vm_*.fine     # VM 테스트 파일
 │   └── ...

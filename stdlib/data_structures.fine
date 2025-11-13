@@ -1,0 +1,367 @@
+# FineLang Data Structures Library
+# Version: 2.3.2
+# Stack, Queue, LinkedList, Deque - 배열 기반 구현
+#
+# 주의: FineLang은 pass-by-value이므로 함수 반환값을 재할당해야 합니다.
+# 예: stack = stack_push(stack, value)
+
+# ============================================
+# Stack - 스택 (LIFO)
+# ============================================
+
+# Stack에 추가 - 새 배열 반환
+export fn stack_push(stack, value) {
+    let size = len(stack)
+    stack[size] = value
+    return stack
+}
+
+# Stack에서 제거 - 값과 새 스택을 Dictionary로 반환
+export fn stack_pop(stack) {
+    let size = len(stack)
+    if size == 0 {
+        print("Error: Stack is empty")
+        return {"value": null, "stack": stack}
+    }
+    
+    let value = stack[size - 1]
+    
+    # 새 배열 생성 (크기 -1)
+    let new_stack = []
+    let i = 0
+    while i < size - 1 {
+        new_stack[i] = stack[i]
+        i = i + 1
+    }
+    
+    return {"value": value, "stack": new_stack}
+}
+
+# Stack 맨 위 값 확인
+export fn stack_peek(stack) {
+    let size = len(stack)
+    if size == 0 {
+        print("Error: Stack is empty")
+        return null
+    }
+    
+    return stack[size - 1]
+}
+
+# Stack 크기
+export fn stack_size(stack) {
+    return len(stack)
+}
+
+# Stack이 비어있는지 확인
+export fn stack_is_empty(stack) {
+    return len(stack) == 0
+}
+
+# ============================================
+# Queue - 큐 (FIFO)
+# ============================================
+
+# Queue에 추가
+export fn queue_enqueue(queue, value) {
+    let size = len(queue)
+    queue[size] = value
+    return queue
+}
+
+# Queue에서 제거 - 값과 새 큐를 Dictionary로 반환
+export fn queue_dequeue(queue) {
+    let size = len(queue)
+    if size == 0 {
+        print("Error: Queue is empty")
+        return {"value": null, "queue": queue}
+    }
+    
+    let value = queue[0]
+    
+    # 새 배열 생성 (크기 -1)
+    let new_queue = []
+    let i = 1
+    while i < size {
+        new_queue[i - 1] = queue[i]
+        i = i + 1
+    }
+    
+    return {"value": value, "queue": new_queue}
+}
+
+# Queue 맨 앞 값 확인
+export fn queue_peek(queue) {
+    let size = len(queue)
+    if size == 0 {
+        print("Error: Queue is empty")
+        return null
+    }
+    
+    return queue[0]
+}
+
+# Queue 크기
+export fn queue_size(queue) {
+    return len(queue)
+}
+
+# Queue가 비어있는지 확인
+export fn queue_is_empty(queue) {
+    return len(queue) == 0
+}
+
+# ============================================
+# LinkedList - 연결 리스트 (배열 기반 간단 구현)
+# ============================================
+# 주의: 실제 연결 리스트가 아닌 배열 래퍼입니다.
+# FineLang에서는 배열이 동적이므로 실제 연결 리스트의 이점이 적습니다.
+
+# LinkedList 생성
+export fn list_create() {
+    return []
+}
+
+# LinkedList 끝에 추가 - O(1)
+export fn list_append(list, value) {
+    let size = len(list)
+    list[size] = value
+    return list
+}
+
+# LinkedList 맨 앞에 추가 - O(n)
+export fn list_prepend(list, value) {
+    let size = len(list)
+    let new_list = []
+    new_list[0] = value
+    
+    let i = 0
+    while i < size {
+        new_list[i + 1] = list[i]
+        i = i + 1
+    }
+    
+    # 원본 배열에 복사
+    i = 0
+    while i <= size {
+        list[i] = new_list[i]
+        i = i + 1
+    }
+    
+    return list
+}
+
+# LinkedList 특정 인덱스 값 가져오기 - O(1)
+export fn list_get(list, index) {
+    let size = len(list)
+    if index < 0 or index >= size {
+        print("Error: Index out of bounds")
+        return null
+    }
+    
+    return list[index]
+}
+
+# LinkedList 특정 인덱스 값 설정 - O(1)
+export fn list_set(list, index, value) {
+    let size = len(list)
+    if index < 0 or index >= size {
+        print("Error: Index out of bounds")
+        return list
+    }
+    
+    list[index] = value
+    return list
+}
+
+# LinkedList 특정 인덱스 삭제 - 값과 새 리스트를 Dictionary로 반환
+export fn list_remove_at(list, index) {
+    let size = len(list)
+    if index < 0 or index >= size {
+        print("Error: Index out of bounds")
+        return {"value": null, "list": list}
+    }
+    
+    let value = list[index]
+    
+    # 새 배열 생성 (크기 -1)
+    let new_list = []
+    let i = 0
+    let j = 0
+    while i < size {
+        if i != index {
+            new_list[j] = list[i]
+            j = j + 1
+        }
+        i = i + 1
+    }
+    
+    return {"value": value, "list": new_list}
+}
+
+# LinkedList 값 찾기 (인덱스 반환) - O(n)
+export fn list_find(list, value) {
+    let size = len(list)
+    let i = 0
+    
+    while i < size {
+        if list[i] == value {
+            return i
+        }
+        i = i + 1
+    }
+    
+    return -1
+}
+
+# LinkedList를 배열로 변환 - O(n)
+export fn list_to_array(list) {
+    let size = len(list)
+    let arr = []
+    
+    let i = 0
+    while i < size {
+        arr[i] = list[i]
+        i = i + 1
+    }
+    
+    return arr
+}
+
+# LinkedList 크기
+export fn list_size(list) {
+    return len(list)
+}
+
+# LinkedList가 비어있는지 확인
+export fn list_is_empty(list) {
+    return len(list) == 0
+}
+
+# LinkedList 전체 삭제
+export fn list_clear(list) {
+    return []
+}
+
+# ============================================
+# Deque - 양방향 큐 (Double-Ended Queue)
+# ============================================
+
+# Deque 생성 (items, front 인덱스만 사용)
+export fn deque_create() {
+    return []
+}
+
+# Deque 앞에 추가 - O(n) 하지만 간단함
+export fn deque_push_front(deque, value) {
+    let size = len(deque)
+    let new_deque = []
+    new_deque[0] = value
+    
+    let i = 0
+    while i < size {
+        new_deque[i + 1] = deque[i]
+        i = i + 1
+    }
+    
+    return new_deque
+}
+
+# Deque 뒤에 추가 - O(1)
+export fn deque_push_back(deque, value) {
+    let size = len(deque)
+    deque[size] = value
+    return deque
+}
+
+# Deque 앞에서 제거 - 값과 새 deque를 Dictionary로 반환
+export fn deque_pop_front(deque) {
+    let size = len(deque)
+    if size == 0 {
+        print("Error: Deque is empty")
+        return {"value": null, "deque": deque}
+    }
+    
+    let value = deque[0]
+    let new_deque = []
+    
+    let i = 1
+    while i < size {
+        new_deque[i - 1] = deque[i]
+        i = i + 1
+    }
+    
+    return {"value": value, "deque": new_deque}
+}
+
+# Deque 뒤에서 제거 - 값과 새 deque를 Dictionary로 반환
+export fn deque_pop_back(deque) {
+    let size = len(deque)
+    if size == 0 {
+        print("Error: Deque is empty")
+        return {"value": null, "deque": deque}
+    }
+    
+    let value = deque[size - 1]
+    let new_deque = []
+    
+    let i = 0
+    while i < size - 1 {
+        new_deque[i] = deque[i]
+        i = i + 1
+    }
+    
+    return {"value": value, "deque": new_deque}
+}
+
+# Deque 맨 앞 값 확인 - O(1)
+export fn deque_peek_front(deque) {
+    let size = len(deque)
+    if size == 0 {
+        print("Error: Deque is empty")
+        return null
+    }
+    
+    return deque[0]
+}
+
+# Deque 맨 뒤 값 확인 - O(1)
+export fn deque_peek_back(deque) {
+    let size = len(deque)
+    if size == 0 {
+        print("Error: Deque is empty")
+        return null
+    }
+    
+    return deque[size - 1]
+}
+
+# Deque 크기
+export fn deque_size(deque) {
+    return len(deque)
+}
+
+# Deque가 비어있는지 확인
+export fn deque_is_empty(deque) {
+    return len(deque) == 0
+}
+
+# Deque를 배열로 변환 (이미 배열이지만 복사 반환)
+export fn deque_to_array(deque) {
+    let size = len(deque)
+    let arr = []
+    
+    let i = 0
+    while i < size {
+        arr[i] = deque[i]
+        i = i + 1
+    }
+    
+    return arr
+}
+
+# Deque 전체 삭제
+export fn deque_clear(deque) {
+    return []
+}
+

@@ -121,9 +121,9 @@ Value* interpreter_eval(Interpreter* interp, ASTNode* node) {
             
             if (array->type == VAL_ARRAY && index->type == VAL_NUMBER) {
                 int idx = (int)index->data.number;
-                if (idx < 0 || idx >= array->data.array.count) {
+                if (idx < 0) {
                     char msg[100];
-                    snprintf(msg, sizeof(msg), "list index out of range: %d", idx);
+                    snprintf(msg, sizeof(msg), "list index cannot be negative: %d", idx);
                     interp->current_exception = value_create_exception("IndexError", msg);
                     exception_attach_stack_trace(interp, interp->current_exception);
                     interp->has_exception = 1;
@@ -131,6 +131,21 @@ Value* interpreter_eval(Interpreter* interp, ASTNode* node) {
                     value_free(val);
                     return value_create_null();
                 }
+                
+                // 배열 자동 확장: 인덱스가 범위를 벗어나면 배열 크기 증가
+                if (idx >= array->data.array.count) {
+                    int new_count = idx + 1;
+                    array->data.array.elements = realloc(array->data.array.elements, 
+                                                          sizeof(Value*) * new_count);
+                    
+                    // 새로 추가된 공간을 null로 초기화
+                    for (int i = array->data.array.count; i < new_count; i++) {
+                        array->data.array.elements[i] = value_create_null();
+                    }
+                    
+                    array->data.array.count = new_count;
+                }
+                
                 // 배열 요소 업데이트 (원본 배열을 직접 수정)
                 value_free(array->data.array.elements[idx]);
                 array->data.array.elements[idx] = value_copy(val);
