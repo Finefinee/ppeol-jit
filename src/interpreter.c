@@ -99,6 +99,70 @@ Value* interpreter_eval(Interpreter* interp, ASTNode* node) {
             environment_set(interp->current_env, node->data.assign.name, val);
             return value_copy(val);
         }
+        
+        case AST_INDEX_ASSIGN: {
+            // 배열 인덱스 할당: arr[i] = value
+            // 배열 변수 이름 가져오기 (AST_IDENTIFIER여야 함)
+            if (node->data.index_assign.array->type != AST_IDENTIFIER) {
+                fprintf(stderr, "Error: Can only assign to array variables\n");
+                return value_create_null();
+            }
+            
+            char* array_name = node->data.index_assign.array->data.string;
+            Value* array = environment_get(interp->current_env, array_name);
+            
+            if (!array) {
+                fprintf(stderr, "Error: Undefined variable '%s'\n", array_name);
+                return value_create_null();
+            }
+            
+            Value* index = interpreter_eval(interp, node->data.index_assign.index);
+            Value* val = interpreter_eval(interp, node->data.index_assign.value);
+            
+            if (array->type == VAL_ARRAY && index->type == VAL_NUMBER) {
+                int idx = (int)index->data.number;
+                if (idx < 0 || idx >= array->data.array.count) {
+                    char msg[100];
+                    snprintf(msg, sizeof(msg), "list index out of range: %d", idx);
+                    interp->current_exception = value_create_exception("IndexError", msg);
+                    exception_attach_stack_trace(interp, interp->current_exception);
+                    interp->has_exception = 1;
+                    value_free(index);
+                    value_free(val);
+                    return value_create_null();
+                }
+                // 배열 요소 업데이트 (원본 배열을 직접 수정)
+                value_free(array->data.array.elements[idx]);
+                array->data.array.elements[idx] = value_copy(val);
+                value_free(index);
+                value_free(val);
+                return value_copy(array->data.array.elements[idx]);
+            } else if (array->type == VAL_DICT && index->type == VAL_STRING) {
+                // 딕셔너리 키 할당
+                for (int i = 0; i < array->data.dict.count; i++) {
+                    if (strcmp(array->data.dict.keys[i], index->data.string) == 0) {
+                        value_free(array->data.dict.values[i]);
+                        array->data.dict.values[i] = value_copy(val);
+                        value_free(index);
+                        value_free(val);
+                        return value_copy(array->data.dict.values[i]);
+                    }
+                }
+                // 새 키 추가
+                array->data.dict.count++;
+                array->data.dict.keys = realloc(array->data.dict.keys, sizeof(char*) * array->data.dict.count);
+                array->data.dict.values = realloc(array->data.dict.values, sizeof(Value*) * array->data.dict.count);
+                array->data.dict.keys[array->data.dict.count - 1] = strdup(index->data.string);
+                array->data.dict.values[array->data.dict.count - 1] = value_copy(val);
+                value_free(index);
+                value_free(val);
+                return value_copy(array->data.dict.values[array->data.dict.count - 1]);
+            }
+            
+            value_free(index);
+            value_free(val);
+            return value_create_null();
+        }
             
         case AST_FUNCTION_DEF: {
             Value* func = (Value*)malloc(sizeof(Value));
@@ -647,13 +711,23 @@ Value* interpreter_eval(Interpreter* interp, ASTNode* node) {
                 if (func && func->type == VAL_FUNCTION) {
                     // 함수 호출 환경 생성
                     Environment* prev_env = interp->current_env;
+                    
+                    // 인자 평가 (prev_env에서 평가!)
+                    Value** evaluated_args = (Value**)malloc(sizeof(Value*) * node->data.method_call.arg_count);
+                    for (int i = 0; i < node->data.method_call.arg_count; i++) {
+                        evaluated_args[i] = interpreter_eval(interp, node->data.method_call.args[i]);
+                    }
+                    
+                    // 이제 함수 환경으로 전환
                     interp->current_env = environment_create(func->data.function.closure);
                     
-                    // 인자 평가 및 바인딩
+                    // 인자 바인딩
                     for (int i = 0; i < func->data.function.param_count && i < node->data.method_call.arg_count; i++) {
-                        Value* arg = interpreter_eval(interp, node->data.method_call.args[i]);
-                        environment_set(interp->current_env, func->data.function.params[i], arg);
+                        environment_set(interp->current_env, func->data.function.params[i], evaluated_args[i]);
                     }
+                    
+                    // 인자 배열 해제
+                    free(evaluated_args);
                     
                     // 함수 본문 실행
                     int prev_return = interp->has_returned;

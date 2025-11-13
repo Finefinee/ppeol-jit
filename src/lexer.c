@@ -78,14 +78,42 @@ Token* lexer_read_string(Lexer* lexer) {
     int start_column = lexer->column;
     lexer_advance(lexer); // 여는 따옴표 건너뛰기
     
-    int start_pos = lexer->position;
+    // 동적 버퍼로 문자열 구성 (이스케이프 처리 위해)
+    int capacity = 64;
+    int length = 0;
+    char* value = (char*)malloc(capacity);
+    
     while (lexer->current_char != '"' && lexer->current_char != '\0') {
-        lexer_advance(lexer);
+        // 버퍼 확장 필요시
+        if (length >= capacity - 1) {
+            capacity *= 2;
+            value = (char*)realloc(value, capacity);
+        }
+        
+        // 이스케이프 시퀀스 처리
+        if (lexer->current_char == '\\') {
+            lexer_advance(lexer);
+            switch (lexer->current_char) {
+                case 'n':  value[length++] = '\n'; break;  // 개행
+                case 't':  value[length++] = '\t'; break;  // 탭
+                case 'r':  value[length++] = '\r'; break;  // 캐리지 리턴
+                case '\\': value[length++] = '\\'; break;  // 백슬래시
+                case '"':  value[length++] = '"';  break;  // 큰따옴표
+                case '\'': value[length++] = '\''; break;  // 작은따옴표
+                case '0':  value[length++] = '\0'; break;  // 널 문자
+                default:
+                    // 알 수 없는 이스케이프 시퀀스는 그대로 추가
+                    value[length++] = '\\';
+                    value[length++] = lexer->current_char;
+                    break;
+            }
+            lexer_advance(lexer);
+        } else {
+            value[length++] = lexer->current_char;
+            lexer_advance(lexer);
+        }
     }
     
-    int length = lexer->position - start_pos;
-    char* value = (char*)malloc(length + 1);
-    strncpy(value, &lexer->source[start_pos], length);
     value[length] = '\0';
     
     if (lexer->current_char == '"') {
@@ -196,12 +224,9 @@ Token* lexer_next_token(Lexer* lexer) {
             case '*': return token_create(TOKEN_MULTIPLY, "*", lexer->line, column);
             case '/':
                 if (lexer->current_char == '/') {
-                    // 주석 처리: // 다음 모든 문자를 줄 끝까지 건너뜀
+                    // 몫 연산자 //
                     lexer_advance(lexer);  // 두 번째 / 건너뛰기
-                    while (lexer->current_char != '\n' && lexer->current_char != '\0') {
-                        lexer_advance(lexer);
-                    }
-                    return lexer_next_token(lexer);  // 다음 토큰 반환
+                    return token_create(TOKEN_FLOOR_DIV, "//", lexer->line, column);
                 }
                 return token_create(TOKEN_DIVIDE, "/", lexer->line, column);
             case '%': return token_create(TOKEN_MODULO, "%", lexer->line, column);

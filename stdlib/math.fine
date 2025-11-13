@@ -1,4 +1,57 @@
 # Math 모듈 - 수학 함수들
+# FineLang Standard Library v2.3.0+
+# 고급 수학 함수 및 상수 제공
+
+# ========================================
+# 수학 상수
+# ========================================
+
+export let PI = 3.14159265359
+export let E = 2.71828182846
+export let PHI = 1.61803398875        # 황금비
+export let SQRT2 = 1.41421356237      # √2
+export let SQRT3 = 1.73205080757      # √3
+export let LN2 = 0.69314718056        # ln(2)
+export let LN10 = 2.30258509299       # ln(10)
+export let LOG2E = 1.44269504089      # log₂(e)
+export let LOG10E = 0.43429448190     # log₁₀(e)
+
+# ==# 배열의 합
+export fn sum(arr) {
+    let n = len(arr)
+    let total = 0
+    let i = 0
+    while i < n {
+        total = total + arr[i]
+        i = i + 1
+    }
+    return total
+}
+
+# 평균
+export fn mean(arr) {
+    let n = len(arr)
+    if n == 0 {
+        return null
+    }
+    return sum(arr) / n
+}====================
+# 수학 상수
+# ========================================
+
+export let PI = 3.14159265359
+export let E = 2.71828182846
+export let PHI = 1.61803398875        # 황금비
+export let SQRT2 = 1.41421356237      # √2
+export let SQRT3 = 1.73205080757      # √3
+export let LN2 = 0.69314718056        # ln(2)
+export let LN10 = 2.30258509299       # ln(10)
+export let LOG2E = 1.44269504089      # log₂(e)
+export let LOG10E = 0.43429448190     # log₁₀(e)
+
+# ========================================
+# 기본 연산
+# ========================================
 
 # 절댓값
 export fn abs(x) {
@@ -8,7 +61,18 @@ export fn abs(x) {
     return x
 }
 
-# 최댓값
+# 부호 함수 (-1, 0, 1)
+export fn sign(x) {
+    if x > 0 {
+        return 1
+    }
+    if x < 0 {
+        return -1
+    }
+    return 0
+}
+
+# 최댓값 (2개)
 export fn max(a, b) {
     if a > b {
         return a
@@ -16,7 +80,7 @@ export fn max(a, b) {
     return b
 }
 
-# 최솟값
+# 최솟값 (2개)
 export fn min(a, b) {
     if a < b {
         return a
@@ -24,25 +88,636 @@ export fn min(a, b) {
     return b
 }
 
-# 제곱
-export fn pow(base, exp) {
-    let result = 1
-    let i = 0
-    while i < exp {
-        result = result * base
+# 배열에서 최댓값
+export fn array_max(arr) {
+    let n = len(arr)
+    if n == 0 {
+        return null
+    }
+    let max_val = arr[0]
+    let i = 1
+    while i < n {
+        if arr[i] > max_val {
+            max_val = arr[i]
+        }
         i = i + 1
     }
+    return max_val
+}
+
+# 배열에서 최솟값
+export fn array_min(arr) {
+    let n = len(arr)
+    if n == 0 {
+        return null
+    }
+    let min_val = arr[0]
+    let i = 1
+    while i < n {
+        if arr[i] < min_val {
+            min_val = arr[i]
+        }
+        i = i + 1
+    }
+    return min_val
+}
+
+# 값 제한 (clamp)
+export fn clamp(x, min_val, max_val) {
+    if x < min_val {
+        return min_val
+    }
+    if x > max_val {
+        return max_val
+    }
+    return x
+}
+
+# ========================================
+# 거듭제곱 및 루트
+# ========================================
+
+# 제곱 (x²)
+export fn square(x) {
+    return x * x
+}
+
+# 세제곱 (x³)
+export fn cube(x) {
+    return x * x * x
+}
+
+# 거듭제곱 (x^y)
+export fn pow(base, exp) {
+    # 음수 지수 처리
+    if exp < 0 {
+        return 1 / pow(base, -exp)
+    }
+    
+    # 정수 지수
+    if floor(exp) == exp {
+        let result = 1
+        let i = 0
+        while i < exp {
+            result = result * base
+            i = i + 1
+        }
+        return result
+    }
+    
+    # 실수 지수는 exp(y * ln(x))로 근사
+    return exp_approx(exp * ln(base))
+}
+
+# 제곱근 (뉴턴-랩슨 방법)
+export fn sqrt(x) {
+    if x < 0 {
+        return null  # 복소수 미지원
+    }
+    if x == 0 {
+        return 0
+    }
+    
+    let guess = x / 2
+    let epsilon = 0.00001
+    let iterations = 0
+    let max_iter = 100
+    
+    while iterations < max_iter {
+        let next_guess = (guess + x / guess) / 2
+        if abs(next_guess - guess) < epsilon {
+            return next_guess
+        }
+        guess = next_guess
+        iterations = iterations + 1
+    }
+    
+    return guess
+}
+
+# n제곱근
+export fn nroot(x, n) {
+    if n == 0 {
+        return null
+    }
+    if n == 1 {
+        return x
+    }
+    if n == 2 {
+        return sqrt(x)
+    }
+    
+    # 뉴턴-랩슨: x_{n+1} = ((n-1)*x_n + A/x_n^(n-1)) / n
+    let guess = x / n
+    let epsilon = 0.00001
+    let iterations = 0
+    let max_iter = 100
+    
+    while iterations < max_iter {
+        let pow_n_minus_1 = pow(guess, n - 1)
+        let next_guess = ((n - 1) * guess + x / pow_n_minus_1) / n
+        if abs(next_guess - guess) < epsilon {
+            return next_guess
+        }
+        guess = next_guess
+        iterations = iterations + 1
+    }
+    
+    return guess
+}
+
+# ========================================
+# 반올림 함수
+# ========================================
+
+# 내림 (floor)
+export fn floor(x) {
+    let int_part = 0
+    if x >= 0 {
+        # 양수: 소수점 버림
+        while int_part <= x {
+            int_part = int_part + 1
+        }
+        return int_part - 1
+    } else {
+        # 음수: 내림
+        while int_part > x {
+            int_part = int_part - 1
+        }
+        return int_part
+    }
+}
+
+# 올림 (ceil)
+export fn ceil(x) {
+    let int_part = floor(x)
+    if x == int_part {
+        return int_part
+    }
+    return int_part + 1
+}
+
+# 반올림 (round)
+export fn round(x) {
+    if x >= 0 {
+        return floor(x + 0.5)
+    } else {
+        return ceil(x - 0.5)
+    }
+}
+
+# 소수점 절삭 (truncate)
+export fn trunc(x) {
+    if x >= 0 {
+        return floor(x)
+    } else {
+        return ceil(x)
+    }
+}
+
+# ========================================
+# 삼각함수 (테일러 급수)
+# ========================================
+
+# sin(x) - 테일러 급수
+export fn sin(x) {
+    # x를 [-π, π] 범위로 정규화
+    while x > PI {
+        x = x - 2 * PI
+    }
+    while x < -PI {
+        x = x + 2 * PI
+    }
+    
+    let result = 0
+    let term = x
+    let i = 1
+    
+    # 테일러 급수: sin(x) = x - x³/3! + x⁵/5! - x⁷/7! + ...
+    while i < 15 {
+        result = result + term
+        term = -term * x * x / ((2 * i) * (2 * i + 1))
+        i = i + 1
+    }
+    
     return result
 }
 
+# cos(x) - sin 이용
+export fn cos(x) {
+    return sin(PI / 2 - x)
+}
+
+# tan(x) = sin(x) / cos(x)
+export fn tan(x) {
+    let cos_x = cos(x)
+    if abs(cos_x) < 0.00001 {
+        return null  # 무한대
+    }
+    return sin(x) / cos_x
+}
+
+# asin(x) - 역삼각함수 (테일러 급수)
+export fn asin(x) {
+    if x < -1 or x > 1 {
+        return null
+    }
+    
+    # 테일러 급수 근사
+    let result = x
+    let term = x
+    let i = 1
+    
+    while i < 10 {
+        term = term * x * x * (2 * i - 1) * (2 * i - 1) / ((2 * i) * (2 * i + 1))
+        result = result + term
+        i = i + 1
+    }
+    
+    return result
+}
+
+# acos(x) = π/2 - asin(x)
+export fn acos(x) {
+    let asin_val = asin(x)
+    if asin_val == null {
+        return null
+    }
+    return PI / 2 - asin_val
+}
+
+# atan(x) - 역탄젠트
+export fn atan(x) {
+    # atan(x) ≈ x - x³/3 + x⁵/5 - x⁷/7 + ... (|x| < 1)
+    if abs(x) <= 1 {
+        let result = 0
+        let term = x
+        let i = 0
+        
+        while i < 20 {
+            result = result + term / (2 * i + 1)
+            term = -term * x * x
+            i = i + 1
+        }
+        return result
+    }
+    
+    # |x| > 1인 경우: atan(x) = π/2 - atan(1/x)
+    if x > 0 {
+        return PI / 2 - atan(1 / x)
+    } else {
+        return -PI / 2 - atan(1 / x)
+    }
+}
+
+# atan2(y, x) - 2인자 역탄젠트
+export fn atan2(y, x) {
+    if x > 0 {
+        return atan(y / x)
+    }
+    if x < 0 {
+        if y >= 0 {
+            return atan(y / x) + PI
+        } else {
+            return atan(y / x) - PI
+        }
+    }
+    # x == 0
+    if y > 0 {
+        return PI / 2
+    }
+    if y < 0 {
+        return -PI / 2
+    }
+    return 0  # 원점
+}
+
+# ========================================
+# 쌍곡선 함수
+# ========================================
+
+# sinh(x) = (e^x - e^(-x)) / 2
+export fn sinh(x) {
+    let exp_x = exp_approx(x)
+    let exp_neg_x = exp_approx(-x)
+    return (exp_x - exp_neg_x) / 2
+}
+
+# cosh(x) = (e^x + e^(-x)) / 2
+export fn cosh(x) {
+    let exp_x = exp_approx(x)
+    let exp_neg_x = exp_approx(-x)
+    return (exp_x + exp_neg_x) / 2
+}
+
+# tanh(x) = sinh(x) / cosh(x)
+export fn tanh(x) {
+    let exp_2x = exp_approx(2 * x)
+    return (exp_2x - 1) / (exp_2x + 1)
+}
+
+# ========================================
+# 지수 및 로그 함수
+# ========================================
+
+# e^x 근사 (테일러 급수)
+export fn exp_approx(x) {
+    let result = 1
+    let term = 1
+    let i = 1
+    
+    # e^x = 1 + x + x²/2! + x³/3! + ...
+    while i < 30 {
+        term = term * x / i
+        result = result + term
+        if abs(term) < 0.0000001 {
+            break
+        }
+        i = i + 1
+    }
+    
+    return result
+}
+
+# 자연로그 ln(x) - 뉴턴 방법
+export fn ln(x) {
+    if x <= 0 {
+        return null
+    }
+    if x == 1 {
+        return 0
+    }
+    
+    # ln(x) 근사: y_n+1 = y_n + 2*(x - e^y_n)/(x + e^y_n)
+    let y = 0
+    if x > 1 {
+        y = 1
+    } else {
+        y = -1
+    }
+    
+    let iterations = 0
+    let max_iter = 100
+    
+    while iterations < max_iter {
+        let exp_y = exp_approx(y)
+        let next_y = y + 2 * (x - exp_y) / (x + exp_y)
+        if abs(next_y - y) < 0.000001 {
+            return next_y
+        }
+        y = next_y
+        iterations = iterations + 1
+    }
+    
+    return y
+}
+
+# log₁₀(x)
+export fn log10(x) {
+    if x <= 0 {
+        return null
+    }
+    return ln(x) / LN10
+}
+
+# log₂(x)
+export fn log2(x) {
+    if x <= 0 {
+        return null
+    }
+    return ln(x) / LN2
+}
+
+# log_base(x)
+export fn log(x, base) {
+    if x <= 0 or base <= 0 or base == 1 {
+        return null
+    }
+    return ln(x) / ln(base)
+}
+
+# ========================================
+# 조합론
+# ========================================
+
 # 계승 (factorial)
 export fn factorial(n) {
+    if n < 0 {
+        return null
+    }
     if n <= 1 {
         return 1
     }
     return n * factorial(n - 1)
 }
 
-# 상수
-export let PI = 3.14159265359
-export let E = 2.71828182846
+# 순열 P(n, r) = n! / (n-r)!
+export fn permutation(n, r) {
+    if r > n or r < 0 or n < 0 {
+        return null
+    }
+    
+    let result = 1
+    let i = 0
+    while i < r {
+        result = result * (n - i)
+        i = i + 1
+    }
+    return result
+}
+
+# 조합 C(n, r) = n! / (r! * (n-r)!)
+export fn combination(n, r) {
+    if r > n or r < 0 or n < 0 {
+        return null
+    }
+    if r > n - r {
+        r = n - r  # 최적화
+    }
+    
+    let result = 1
+    let i = 0
+    while i < r {
+        result = result * (n - i) / (i + 1)
+        i = i + 1
+    }
+    return result
+}
+
+# 최대공약수 (GCD) - 유클리드 호제법
+export fn gcd(a, b) {
+    a = abs(a)
+    b = abs(b)
+    
+    while b != 0 {
+        let temp = b
+        b = a % b
+        a = temp
+    }
+    return a
+}
+
+# 최소공배수 (LCM)
+export fn lcm(a, b) {
+    if a == 0 or b == 0 {
+        return 0
+    }
+    return abs(a * b) / gcd(a, b)
+}
+
+# ========================================
+# 통계 함수
+# ========================================
+
+# 중앙값
+export fn median(arr) {
+    let n = len(arr)
+    if n == 0 {
+        return null
+    }
+    
+    # TODO: 배열 복사 기능이 필요함
+    # 현재는 원본 배열을 정렬하므로 사용 주의!
+    # 정렬 (버블 소트)
+    let i = 0
+    while i < n - 1 {
+        let j = 0
+        while j < n - i - 1 {
+            if arr[j] > arr[j + 1] {
+                let temp = arr[j]
+                arr[j] = arr[j + 1]
+                arr[j + 1] = temp
+            }
+            j = j + 1
+        }
+        i = i + 1
+    }
+    
+    let mid = n // 2
+    if n % 2 == 0 {
+        return (arr[mid - 1] + arr[mid]) / 2
+    } else {
+        return arr[mid]
+    }
+}
+
+# 분산
+export fn variance(arr) {
+    let n = len(arr)
+    if n == 0 {
+        return null
+    }
+    
+    let avg = mean(arr)
+    let sum_sq_diff = 0
+    let i = 0
+    
+    while i < n {
+        let diff = arr[i] - avg
+        sum_sq_diff = sum_sq_diff + diff * diff
+        i = i + 1
+    }
+    
+    return sum_sq_diff / n
+}
+
+# 표준편차
+export fn std_dev(arr) {
+    let var = variance(arr)
+    if var == null {
+        return null
+    }
+    return sqrt(var)
+}
+
+# ========================================
+# 각도 변환
+# ========================================
+
+# 도(degree)를 라디안(radian)으로
+export fn radians(degrees) {
+    return degrees * PI / 180
+}
+
+# 라디안을 도로
+export fn degrees(radians) {
+    return radians * 180 / PI
+}
+
+# ========================================
+# 기타 유용한 함수
+# ========================================
+
+# 선형 보간 (lerp)
+export fn lerp(a, b, t) {
+    return a + (b - a) * t
+}
+
+# 정규화 (0~1 범위로)
+export fn normalize(x, min_val, max_val) {
+    if max_val == min_val {
+        return 0
+    }
+    return (x - min_val) / (max_val - min_val)
+}
+
+# 매핑 (범위 변환)
+export fn map_range(x, in_min, in_max, out_min, out_max) {
+    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+}
+
+# 짝수 판별
+export fn is_even(n) {
+    return n % 2 == 0
+}
+
+# 홀수 판별
+export fn is_odd(n) {
+    return n % 2 != 0
+}
+
+# 소수 판별
+export fn is_prime(n) {
+    if n < 2 {
+        return 0  # false
+    }
+    if n == 2 {
+        return 1  # true
+    }
+    if is_even(n) {
+        return 0
+    }
+    
+    let i = 3
+    while i * i <= n {
+        if n % i == 0 {
+            return 0
+        }
+        i = i + 2
+    }
+    return 1
+}
+
+# 피보나치 수 (반복)
+export fn fibonacci(n) {
+    if n <= 0 {
+        return 0
+    }
+    if n == 1 {
+        return 1
+    }
+    
+    let a = 0
+    let b = 1
+    let i = 2
+    
+    while i <= n {
+        let temp = a + b
+        a = b
+        b = temp
+        i = i + 1
+    }
+    
+    return b
+}
+

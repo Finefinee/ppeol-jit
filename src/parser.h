@@ -36,7 +36,8 @@ typedef enum {
     AST_ASSERT,
     AST_IMPORT,
     AST_EXPORT,
-    AST_MATRIX
+    AST_MATRIX,
+    AST_INDEX_ASSIGN  // 배열 인덱스 할당: arr[i] = value
 } ASTNodeType;
 
 // AST 노드 구조체
@@ -133,6 +134,11 @@ typedef struct ASTNode {
             char* field_name;
             struct ASTNode* value;
         } field_assign;
+        struct {
+            struct ASTNode* array;   // 배열
+            struct ASTNode* index;   // 인덱스
+            struct ASTNode* value;   // 할당할 값
+        } index_assign;
         struct {
             char* method_name;
             struct ASTNode** args;

@@ -547,6 +547,18 @@ ASTNode* parser_parse_expression(Parser* parser) {
         parser_advance(parser);
         ASTNode* right = parser_parse_expression(parser);
         
+        // 배열 인덱스 할당 처리 (arr[i] = value)
+        if (left->type == AST_INDEX) {
+            ASTNode* node = (ASTNode*)malloc(sizeof(ASTNode));
+            node->type = AST_INDEX_ASSIGN;
+            node->data.index_assign.array = left->data.index.array;
+            node->data.index_assign.index = left->data.index.index;
+            node->data.index_assign.value = right;
+            // left의 외부 구조만 해제 (내부는 node가 사용 중)
+            free(left);
+            return node;
+        }
+        
         // 필드 할당 처리 (obj.field = value)
         if (left->type == AST_DOT_ACCESS) {
             ASTNode* node = (ASTNode*)malloc(sizeof(ASTNode));
