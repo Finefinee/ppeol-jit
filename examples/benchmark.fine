@@ -1,0 +1,47 @@
+# 간단한 성능 벤치마크
+
+print("=== FineLang Performance Benchmark ===")
+print("")
+
+# 1. 재귀 호출 성능
+print("1. Recursive Fibonacci (n=20)")
+fn fib(n) {
+    if n <= 1 {
+        return n
+    }
+    return fib(n - 1) + fib(n - 2)
+}
+let result = fib(20)
+print("   Result:", result)
+print("")
+
+# 2. 루프 성능
+print("2. Loop Performance (10000 iterations)")
+let sum = 0
+for i in range(0, 10000) {
+    sum = sum + i
+}
+print("   Sum:", sum)
+print("")
+
+# 3. 벡터 연산 성능
+print("3. Vector Operations")
+let v1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+let v2 = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+let dot = v1 @ v2
+print("   Dot product:", dot)
+print("")
+
+# 4. 함수 호출 성능
+print("4. Function Calls (1000 times)")
+fn square(x) {
+    return x * x
+}
+let total = 0
+for i in range(0, 1000) {
+    total = total + square(i)
+}
+print("   Total:", total)
+print("")
+
+print("Benchmark complete!")

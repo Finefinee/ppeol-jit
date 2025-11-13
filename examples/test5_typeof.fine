@@ -1,0 +1,8 @@
+# Test 5: typeof 함수
+print("=== typeof Function ===")
+print("typeof(null):", typeof(null))
+print("typeof(42):", typeof(42))
+print("typeof('hello'):", typeof("hello"))
+print("typeof([1,2,3]):", typeof([1, 2, 3]))
+print("typeof({x:10}):", typeof({x: 10}))
+print("typeof([[1,2]]):", typeof([[1, 2]]))

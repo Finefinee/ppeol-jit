@@ -1,0 +1,44 @@
+# 나머지 및 몫 연산자 예제
+
+# 예제 1: 홀수/짝수 판별
+print("=== 홀수/짝수 판별 ===")
+let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+let i = 0
+while i < len(numbers) {
+    let num = numbers[i]
+    if num % 2 == 0 {
+        print(num, "은(는) 짝수")
+    } else {
+        print(num, "은(는) 홀수")
+    }
+    i = i + 1
+}
+
+# 예제 2: 배수 체크
+print("\n=== 3의 배수 찾기 ===")
+i = 1
+while i <= 20 {
+    if i % 3 == 0 {
+        print(i, "은(는) 3의 배수")
+    }
+    i = i + 1
+}
+
+# 예제 3: 시간 변환
+print("\n=== 시간 변환 (분 -> 시:분) ===")
+let total_minutes = 137
+let hours = total_minutes // 60
+let minutes = total_minutes % 60
+print(total_minutes, "분 =", hours, "시간", minutes, "분")
+
+# 예제 4: 배열 순환 인덱스
+print("\n=== 순환 인덱스 ===")
+let items = ["A", "B", "C", "D", "E"]
+let index = 0
+while index < 10 {
+    let circular_index = index % len(items)
+    print("Index", index, "->", items[circular_index])
+    index = index + 1
+}
+
+print("\n✅ 예제 완료!")

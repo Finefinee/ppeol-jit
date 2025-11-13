@@ -1,0 +1,23 @@
+# Part 2
+print("=== Part 2 ===")
+
+# 6. assert 문 - 실패하는 경우
+print("6. assert - failing assertion")
+try {
+    let y = 3
+    assert y > 10, "y should be greater than 10"
+} catch AssertionError as e {
+    print("Assertion failed:", e)
+}
+print()
+
+# 7. assert without message
+print("7. assert without custom message")
+try {
+    assert 0, "This should fail"
+} catch AssertionError as e {
+    print("Caught assertion:", e)
+}
+print()
+
+print("=== Part 2 completed! ===")

@@ -1,0 +1,8 @@
+# 재귀 함수 깊이 제한 테스트
+fn recursive(n) {
+    if n > 0 {
+        recursive(n + 1)
+    }
+}
+
+recursive(1)

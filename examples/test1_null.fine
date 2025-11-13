@@ -1,0 +1,6 @@
+# Test 1: null 체크
+print("=== Null Check ===")
+let x = null
+let y = 42
+print("is_null(null):", is_null(x))
+print("is_null(42):", is_null(y))

@@ -1,0 +1,162 @@
+# FineLang v1.6.0 Features - Advanced Exception Handling
+# 타입별 catch, assert 문 테스트
+
+print("=== v1.6.0 Advanced Exception Features ===")
+print()
+
+# 1. 타입별 catch - ZeroDivisionError만 잡기
+print("1. Type-specific catch (ZeroDivisionError)")
+try {
+    let x = 10 / 0
+} catch ZeroDivisionError as e {
+    print("Caught division by zero:", e)
+}
+print()
+
+# 2. 타입별 catch - IndexError만 잡기
+print("2. Type-specific catch (IndexError)")
+try {
+    let arr = [1, 2, 3]
+    print(arr[10])
+} catch IndexError as e {
+    print("Caught index error:", e)
+}
+print()
+
+# 3. 타입별 catch - KeyError만 잡기
+print("3. Type-specific catch (KeyError)")
+try {
+    let person = {name: "Alice", age: 30}
+    print(person["city"])
+} catch KeyError as e {
+    print("Caught key error:", e)
+}
+print()
+
+# 4. 잘못된 타입 매치 - 잡히지 않음
+print("4. Type mismatch - exception propagates")
+try {
+    try {
+        let x = 10 / 0
+    } catch IndexError as e {
+        print("This won't be printed")
+    }
+} catch e {
+    print("Caught by outer catch:", e)
+}
+print()
+
+# 5. assert 문 - 성공하는 경우
+print("5. assert - successful assertion")
+let x = 10
+assert x > 5, "x should be greater than 5"
+print("Assertion passed!")
+print()
+
+# 6. assert 문 - 실패하는 경우
+print("6. assert - failing assertion")
+try {
+    let y = 3
+    assert y > 10, "y should be greater than 10"
+} catch AssertionError as e {
+    print("Assertion failed:", e)
+}
+print()
+
+# 7. assert without message
+print("7. assert without custom message")
+try {
+    assert 0, "This should fail"
+} catch AssertionError as e {
+    print("Caught assertion:", e)
+}
+print()
+
+# 8. 다중 catch - 타입별로 다르게 처리
+print("8. Multiple catches with different types")
+
+fn test_exception(type_num) {
+    if type_num == 1 {
+        let x = 10 / 0
+    } else {
+        if type_num == 2 {
+            let arr = [1, 2, 3]
+            print(arr[100])
+        } else {
+            let dict = {x: 10}
+            print(dict["missing"])
+        }
+    }
+}
+
+# ZeroDivisionError 테스트
+try {
+    test_exception(1)
+} catch ZeroDivisionError as e {
+    print("Caught ZeroDivisionError:", e)
+}
+
+# IndexError 테스트
+try {
+    test_exception(2)
+} catch IndexError as e {
+    print("Caught IndexError:", e)
+}
+
+# KeyError 테스트
+try {
+    test_exception(3)
+} catch KeyError as e {
+    print("Caught KeyError:", e)
+}
+print()
+
+# 9. assert in functions
+print("9. assert in functions")
+
+fn validate_positive(num) {
+    assert num > 0, "Number must be positive"
+    return num
+}
+
+try {
+    validate_positive(5)
+    print("validate_positive(5): OK")
+    validate_positive(-3)
+} catch AssertionError as e {
+    print("Validation failed:", e)
+}
+print()
+
+# 10. 복합 예제 - 타입별 처리 + assert
+print("10. Complex example")
+
+fn safe_divide(a, b) {
+    assert b != 0, "Divisor cannot be zero"
+    return a / b
+}
+
+fn safe_access(arr, index) {
+    assert index >= 0, "Index must be non-negative"
+    assert index < len(arr), "Index out of bounds"
+    return arr[index]
+}
+
+# AssertionError 테스트
+try {
+    safe_divide(10, 0)
+} catch AssertionError as e {
+    print("Caught AssertionError:", e)
+}
+
+# 성공하는 경우
+let result = safe_divide(10, 2)
+print("10 / 2 =", result)
+
+let arr = [1, 2, 3, 4, 5]
+let value = safe_access(arr, 2)
+print("arr[2] =", value)
+
+print()
+
+print("=== All v1.6.0 tests completed! ===")

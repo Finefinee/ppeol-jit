@@ -1,0 +1,13 @@
+fn c() {
+    let x = 1 / 0  # ZeroDivisionError 발생
+}
+
+fn b() {
+    c()
+}
+
+fn a() {
+    b()
+}
+
+a()

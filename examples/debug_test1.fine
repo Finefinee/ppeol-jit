@@ -1,0 +1,8 @@
+# Test 1: Type-specific catch
+print("Test 1: Type-specific catch")
+try {
+    let x = 10 / 0
+} catch ZeroDivisionError as e {
+    print("Caught:", e)
+}
+print("Test 1 completed")

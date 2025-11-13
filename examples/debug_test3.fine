@@ -1,0 +1,15 @@
+# Test 3: Function with exception
+print("Test 3: Function with exception")
+
+fn test_exception(type_num) {
+    if type_num == 1 {
+        let x = 10 / 0
+    }
+}
+
+try {
+    test_exception(1)
+} catch ZeroDivisionError as e {
+    print("Caught:", e)
+}
+print("Test 3 completed")

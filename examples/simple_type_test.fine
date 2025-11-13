@@ -1,0 +1,16 @@
+# 간단한 타입 체크 테스트
+
+print("=== is_null 테스트 ===")
+let x = null
+print(is_null(x))
+print(is_null(42))
+
+print("=== is_number 테스트 ===")
+print(is_number(42))
+print(is_number("hello"))
+
+print("=== typeof 테스트 ===")
+print(typeof(null))
+print(typeof(42))
+print(typeof("hello"))
+print(typeof([1, 2, 3]))

@@ -1,0 +1,176 @@
+# FineLang v1.5.0 예외 처리 테스트
+
+print("=== FineLang v1.5.0 Exception Handling ===")
+print("")
+
+# 1. 기본 try-catch
+print("=== 1. Basic try-catch ===")
+try {
+    print("Before error")
+    let x = 10 / 0
+    print("After error - should not print")
+} catch e {
+    print("Caught exception:", e)
+}
+print("Program continues")
+print("")
+
+# 2. throw 문
+print("=== 2. Throw statement ===")
+try {
+    print("Throwing custom error...")
+    throw "This is a custom error message"
+} catch e {
+    print("Caught:", e)
+}
+print("")
+
+# 3. 함수에서 예외 발생
+print("=== 3. Exception in function ===")
+fn divide(a, b) {
+    if b == 0 {
+        throw "Cannot divide by zero"
+    }
+    return a / b
+}
+
+try {
+    let result = divide(10, 2)
+    print("10 / 2 =", result)
+    
+    let bad_result = divide(10, 0)
+    print("This should not print")
+} catch e {
+    print("Error in divide:", e)
+}
+print("")
+
+# 4. IndexError 테스트
+print("=== 4. IndexError ===")
+let arr = [1, 2, 3, 4, 5]
+try {
+    print("arr[2] =", arr[2])
+    print("arr[10] =", arr[10])  # IndexError
+} catch e {
+    print("Caught:", e)
+}
+print("")
+
+# 5. KeyError 테스트
+print("=== 5. KeyError ===")
+let person = {name: "Alice", age: 30}
+try {
+    print("Name:", person["name"])
+    print("City:", person["city"])  # KeyError
+} catch e {
+    print("Caught:", e)
+}
+print("")
+
+# 6. finally 블록
+print("=== 6. Finally block ===")
+let resource = "opened"
+try {
+    print("Using resource:", resource)
+    throw "Something went wrong"
+} catch e {
+    print("Error:", e)
+} finally {
+    print("Cleanup: closing resource")
+    resource = "closed"
+}
+print("Resource status:", resource)
+print("")
+
+# 7. 중첩 try-catch
+print("=== 7. Nested try-catch ===")
+try {
+    print("Outer try")
+    try {
+        print("Inner try")
+        let x = 1 / 0
+    } catch e {
+        print("Inner catch:", e)
+        throw "Re-throwing from inner"
+    }
+} catch e {
+    print("Outer catch:", e)
+}
+print("")
+
+# 8. 클래스에서 예외 처리
+print("=== 8. Exception in class methods ===")
+class BankAccount {
+    let balance
+    
+    fn constructor(initial) {
+        this.balance = initial
+    }
+    
+    fn withdraw(amount) {
+        if amount > this.balance {
+            throw "Insufficient funds"
+        }
+        if amount < 0 {
+            throw "Invalid amount"
+        }
+        this.balance = this.balance - amount
+        return this.balance
+    }
+}
+
+let account = new BankAccount(100)
+try {
+    print("Withdrawing 50...")
+    account.withdraw(50)
+    print("Balance:", account.balance)
+    
+    print("Withdrawing 100...")
+    account.withdraw(100)  # 잔액 부족
+    print("This should not print")
+} catch e {
+    print("Bank error:", e)
+    print("Final balance:", account.balance)
+}
+print("")
+
+# 9. 예외 전파 테스트
+print("=== 9. Exception propagation ===")
+fn level3() {
+    print("Level 3: throwing error")
+    throw "Error from level 3"
+}
+
+fn level2() {
+    print("Level 2: calling level 3")
+    level3()
+    print("Level 2: after call (should not print)")
+}
+
+fn level1() {
+    print("Level 1: calling level 2")
+    level2()
+    print("Level 1: after call (should not print)")
+}
+
+try {
+    level1()
+} catch e {
+    print("Caught at top level:", e)
+}
+print("")
+
+# 10. 배열과 반복문에서 예외
+print("=== 10. Exception in loop ===")
+let numbers = [1, 2, 0, 4, 5]
+for i in range(0, len(numbers)) {
+    try {
+        let result = 100 / numbers[i]
+        print("100 /", numbers[i], "=", result)
+    } catch e {
+        print("Error with", numbers[i], ":", e)
+    }
+}
+print("")
+
+print("=== All exception tests completed! ===")

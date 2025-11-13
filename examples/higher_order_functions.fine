@@ -1,0 +1,61 @@
+# 고차 함수 테스트 (v1.8.0)
+
+print("=== Map 함수 ===")
+fn double(x) {
+    return x * 2
+}
+
+let numbers = [1, 2, 3, 4, 5]
+let doubled = map(double, numbers)
+print("Original:", numbers)
+print("Doubled:", doubled)
+
+print("\n=== Filter 함수 ===")
+fn is_greater_than_2(x) {
+    return x > 2
+}
+
+let filtered = filter(is_greater_than_2, numbers)
+print("Original:", numbers)
+print("Greater than 2:", filtered)
+
+print("\n=== Reduce 함수 ===")
+fn add(acc, x) {
+    return acc + x
+}
+
+let total = reduce(add, numbers, 0)
+print("Original:", numbers)
+print("Sum:", total)
+
+print("\n=== 복합 예제 ===")
+fn square(x) {
+    return x * x
+}
+
+fn is_greater_than_5(x) {
+    return x > 5
+}
+
+let squared = map(square, numbers)
+print("Squared:", squared)
+
+let large = filter(is_greater_than_5, squared)
+print("Greater than 5:", large)
+
+let sum_of_large = reduce(add, large, 0)
+print("Sum of large:", sum_of_large)
+
+print("\n=== 체이닝 예제 ===")
+# [1,2,3,4,5] -> square -> [1,4,9,16,25] -> filter(>5) -> [9,16,25] -> sum -> 50
+fn multiply(acc, x) {
+    return acc * x
+}
+
+let result = reduce(add, filter(is_greater_than_5, map(square, numbers)), 0)
+print("Result of map->filter->reduce:", result)
+
+let product = reduce(multiply, [2, 3, 4], 1)
+print("Product of [2,3,4]:", product)
+
+print("\n=== 테스트 완료! ===")

@@ -1,0 +1,30 @@
+# Test 6: 실용 예제 - 안전한 나눗셈
+print("=== Safe Divide ===")
+
+fn safe_divide(a, b) {
+    if is_null(a) {
+        print("Error: a is null")
+        return null
+    }
+    if is_null(b) {
+        print("Error: b is null")
+        return null
+    }
+    if is_number(a) == 0 {
+        print("Error: a is not a number")
+        return null
+    }
+    if is_number(b) == 0 {
+        print("Error: b is not a number")
+        return null
+    }
+    if b == 0 {
+        print("Error: division by zero")
+        return null
+    }
+    return a / b
+}
+
+print("10 / 2 =", safe_divide(10, 2))
+print("10 / 0 =", safe_divide(10, 0))
+print("10 / null =", safe_divide(10, null))

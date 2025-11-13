@@ -1,0 +1,61 @@
+# FineLang 메서드 호출 예제
+
+print("=== Method Calls ===")
+print()
+
+class Calculator {
+    let x
+    let y
+    
+    fn add(a, b) {
+        print("Adding", a, "+", b)
+        return a + b
+    }
+    
+    fn multiply(a, b) {
+        print("Multiplying", a, "*", b)
+        return a * b
+    }
+}
+
+let calc = new Calculator(0, 0)
+print("Calculator:", calc)
+print()
+
+# 메서드 호출
+print("Calling methods:")
+let sum = calc.add(10, 20)
+print("Result:", sum)
+print()
+
+let product = calc.multiply(5, 6)
+print("Result:", product)
+print()
+
+print("=== Counter Class ===")
+
+class Counter {
+    let value
+    
+    fn increment() {
+        print("Incrementing counter")
+    }
+    
+    fn reset() {
+        print("Resetting counter")
+    }
+    
+    fn show() {
+        print("Showing counter value")
+    }
+}
+
+let counter = new Counter(0)
+print("Counter:", counter)
+counter.increment()
+counter.increment()
+counter.show()
+counter.reset()
+
+print()
+print("=== Complete! ===")

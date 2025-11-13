@@ -1,0 +1,57 @@
+# FineLang v1.9.0+ 모듈 시스템 데모
+# 네임스페이스 접근 기능 테스트
+
+import math
+
+print("=== 모듈 시스템 v1.9.0+ ===")
+print()
+
+# 1. 모듈 객체 확인
+print("1. 모듈 객체:", math)
+print()
+
+# 2. 모듈에서 함수 가져오기
+print("2. 함수 가져오기:")
+let abs_func = math.abs
+let max_func = math.max
+let pow_func = math.pow
+print("  abs_func:", abs_func)
+print("  max_func:", max_func)
+print("  pow_func:", pow_func)
+print()
+
+# 3. 가져온 함수 사용
+print("3. 함수 호출 결과:")
+let x = 0 - 10
+print("  let x = 0 - 10")
+print("  abs(x) =", abs_func(x))
+print("  max(x, 5) =", max_func(x, 5))
+print("  pow(2, 3) =", pow_func(2, 3))
+print()
+
+# 4. 모듈 상수 접근
+print("4. 상수 접근:")
+print("  math.PI =", math.PI)
+print("  math.E =", math.E)
+print()
+
+# 5. 계산 예제
+let radius = 5
+let area = pow_func(radius, 2) * math.PI
+print("5. 계산 예제:")
+print("  반지름 5인 원의 넓이 =", area)
+print()
+
+print("=== 작동하는 기능 ===")
+print("✅ import 문으로 모듈 로드")
+print("✅ 모듈 객체를 변수로 저장")
+print("✅ module.symbol로 export된 값 접근")
+print("✅ 함수를 변수에 저장 후 호출")
+print("✅ 모듈 상수 접근")
+print()
+
+print("=== v2.0에서 추가 예정 ===")
+print("⏳ module.function(args) 직접 호출")
+print("⏳ from module import symbol 구문")
+print("⏳ import module as alias 별칭")
+print("⏳ 단항 마이너스 파싱 (-5)")

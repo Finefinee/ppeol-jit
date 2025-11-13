@@ -1,0 +1,8 @@
+# Test 2: 숫자와 문자열 체크
+print("=== Number & String Check ===")
+let num = 3.14
+let str = "hello"
+print("is_number(3.14):", is_number(num))
+print("is_number('hello'):", is_number(str))
+print("is_string('hello'):", is_string(str))
+print("is_string(3.14):", is_string(num))

@@ -1,0 +1,33 @@
+# 간단한 선형 회귀 데모
+# y = mx + b
+
+print("=== Simple Linear Regression Demo ===")
+print("")
+
+# 훈련 데이터: y = 2x + 1
+let X = [1, 2, 3, 4, 5]
+let y = [3, 5, 7, 9, 11]
+
+print("Training data:")
+print("X =", X)
+print("y =", y)
+print("")
+
+# 간단한 학습 시뮬레이션
+let w = 2.0
+let b = 1.0
+
+print("Model: y = w * x + b")
+print("Parameters: w =", w, ", b =", b)
+print("")
+
+# 예측
+print("Predictions:")
+for i in range(0, 5) {
+    let pred = X[i] * w + b
+    print("x =", X[i], "=> predicted y =", pred, ", actual y =", y[i])
+}
+
+print("")
+print("Model successfully fits the data!")
+print("This demonstrates FineLang's capability for ML tasks.")

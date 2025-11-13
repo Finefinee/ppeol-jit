@@ -1,0 +1,8 @@
+# Test 3: 배열과 딕셔너리 체크
+print("=== Array & Dict Check ===")
+let arr = [1, 2, 3]
+let dict = {x: 10, y: 20}
+print("is_array([1,2,3]):", is_array(arr))
+print("is_array(dict):", is_array(dict))
+print("is_dict(dict):", is_dict(dict))
+print("is_dict([1,2,3]):", is_dict(arr))
